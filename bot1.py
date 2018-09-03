@@ -4,7 +4,7 @@ from discord.ext import commands
 
 
 # 変数
-version="1.0.1"
+version="1.0.2"
 token = "NDcyNTM5NzczMzI4ODE4MTc2.Dm0hmA.b4vSarQxZBcbp6rEJ545QsQyeu4"
 bot = commands.Bot(command_prefix=commands.when_mentioned_or("!"),
                    description='This is Botくん1号 for managing guild "KIDDING KID".')
@@ -85,7 +85,11 @@ class GuildManager:
         # give users a link to invite thsi bot to their server
         embed.add_field(name="Invite", value="https://discordapp.com/api/oauth2/authorize?client_id=472539773328818176&permissions=0&scope=bot")
         await ctx.send(embed=embed)
-    
+
+    async def on_member_join(self, member):
+        role = discord.utils.get(member.guild.roles, name="ゲスト")
+        await member.add_roles([role])
+
     @commands.command()
     async def make_project(self, ctx):
         """
