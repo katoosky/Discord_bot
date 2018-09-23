@@ -174,4 +174,4 @@ async def on_ready():
     print('------')
 
 bot.add_cog(GuildManager(bot))
-bot.run(token)
+# bot.run(token)
