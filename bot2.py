@@ -13,8 +13,8 @@ bot = commands.Bot(command_prefix=commands.when_mentioned_or("&"),
                    description='This is Botくん2号.')
 bot.remove_command('help')
 
-# dsn = "postgres://owdrwmlniladba:f2b7dfd2b785fc2d84bdd2dddd5bfbb458dfca2c22f72eab13a0b0be71d3b0f6@ec2-107-21-98-165.compute-1.amazonaws.com:5432/de885umnk3t5cr"
-dsn = "postgres://discord:password@postgres:5432/discord"
+dsn = "postgres://owdrwmlniladba:f2b7dfd2b785fc2d84bdd2dddd5bfbb458dfca2c22f72eab13a0b0be71d3b0f6@ec2-107-21-98-165.compute-1.amazonaws.com:5432/de885umnk3t5cr"
+# dsn = "postgres://discord:password@postgres:5432/discord"
 
 
 class ThemeBot:
