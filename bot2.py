@@ -76,7 +76,7 @@ Botくん1号 Commands
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def add_genre(self, ctx):
+    async def add_genres(self, ctx):
         await ctx.send(self.add_record("genres", ctx))
 
     @commands.command()
@@ -84,7 +84,7 @@ Botくん1号 Commands
         await ctx.send(self.show_values('genres', ctx))
 
     @commands.command()
-    async def add_topic(self, ctx):
+    async def add_topics(self, ctx):
         await ctx.send(self.add_record("topics", ctx))
 
     @commands.command()
