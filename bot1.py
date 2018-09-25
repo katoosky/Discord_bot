@@ -1,77 +1,31 @@
-import csv
 import discord
 from discord.ext import commands
 
 
 # 変数
-version="1.0.2"
+version="1.0.4"
 token = "NDcyNTM5NzczMzI4ODE4MTc2.Dm0hmA.b4vSarQxZBcbp6rEJ545QsQyeu4"
 bot = commands.Bot(command_prefix=commands.when_mentioned_or("!"),
                    description='This is Botくん1号 for managing guild "KIDDING KID".')
 bot.remove_command('help')
 
-def format_category_outline(category):
-    text = """
-```
-デフォルトで生成されるチャンネルの説明です。
-各カテゴリーで個別に作成したチャンネルは別レスでまとめてください
-```
-チャンネルの説明
-　<#{0.id}>
-　　このチャンネル
-
-　<#{1.id}>
-　　仕様情報をまとめるチャンネル
-　　確定した仕様のみを上げる
-　　未確定の仕様などは
-
-　<#{2.id}>
-　　全体連絡用のチャンネル
-
-　<#{3.id}>
-　　相談用チャンネル
-　　必ず、何を相談したいか提起してから話し合う
-　　5レス以上の話し合いは、終わったら内容をまとめる
-
-　<#{4.id}>
-　　雑談用チャンネル
-
-　<#{5.id}>
-　　アプリやサービスのアイディアをぶん投げてくチャンネル
-
-　<#{6.id}>
-　　バグの報告や修正報告など、デバッグに関することを投げるチャンネル
-
-　<#{6.id}>
-　　システム通知を表示するチャンネル
-　　Botを実行する場合もここを使う
-
-　<#{8.id}>
-　　ログインしてるときのメッセージ以外見れないチャット
-　　ログアウト時にログは見れなくなる
-　　ログに残したくない怒りのメッセージや罵り合いなどはここで
-
-　<#{9.id}>
-　　ボイスチャット
-　　会議や話し合いなどで使ってください
+help_text = """
+Botくん1号 Commands
+    !info
+        Show Bot informations.
+    !make_project PROJECT_NAME
+        Make a new project with a new role.
+    !remove_project PROJECT_NAME
+        Remove a project.
 """
-    return text.format(*category.channels)
 
 class GuildManager:
     def __init__(self, bot):
         self.bot = bot
-
+    
     @commands.command()
     async def help(self, ctx):
-        help_context = []
-        help_context.append('Botくん1号 Commands')
-        help_context.append('\t!info')
-        help_context.append('\t\tShow Bot informations.')
-        help_context.append('\t!make_project PROJECT_NAME')
-        help_context.append('\t\tMake a new project with a new role.')
-        help_context.append('\t!remove_project PROJECT_NAME')
-        help_context.append('\t\tRemove a project.')
-        await ctx.send('```'+'\n'.join(help_context)+'```')
+        await ctx.send('```'+help_text+'```')
 
     @commands.command()
     async def info(self, ctx):
@@ -175,3 +129,50 @@ async def on_ready():
 
 bot.add_cog(GuildManager(bot))
 # bot.run(token)
+
+def format_category_outline(category):
+    text = """
+```
+デフォルトで生成されるチャンネルの説明です。
+各カテゴリーで個別に作成したチャンネルは別レスでまとめてください
+```
+チャンネルの説明
+　<#{0.id}>
+　　このチャンネル
+
+　<#{1.id}>
+　　仕様情報をまとめるチャンネル
+　　確定した仕様のみを上げる
+　　未確定の仕様などは
+
+　<#{2.id}>
+　　全体連絡用のチャンネル
+
+　<#{3.id}>
+　　相談用チャンネル
+　　必ず、何を相談したいか提起してから話し合う
+　　5レス以上の話し合いは、終わったら内容をまとめる
+
+　<#{4.id}>
+　　雑談用チャンネル
+
+　<#{5.id}>
+　　アプリやサービスのアイディアをぶん投げてくチャンネル
+
+　<#{6.id}>
+　　バグの報告や修正報告など、デバッグに関することを投げるチャンネル
+
+　<#{6.id}>
+　　システム通知を表示するチャンネル
+　　Botを実行する場合もここを使う
+
+　<#{8.id}>
+　　ログインしてるときのメッセージ以外見れないチャット
+　　ログアウト時にログは見れなくなる
+　　ログに残したくない怒りのメッセージや罵り合いなどはここで
+
+　<#{9.id}>
+　　ボイスチャット
+　　会議や話し合いなどで使ってください
+"""
+    return text.format(*category.channels)

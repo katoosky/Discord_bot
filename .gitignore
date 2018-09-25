@@ -1,2 +1,4 @@
 .python-version
 .vscode/
+docker
+__pycache__/
