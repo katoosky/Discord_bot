@@ -7,7 +7,7 @@ import psycopg2
 from psycopg2.extras import DictCursor
 
 # 変数
-version="1.0.1"
+version="1.1.3"
 token = "NDkzOTI2MDI4NjIwODU3MzY0.DosFJA.1Hzepp-iPyU-MFk__HZ9-JKsY8g"
 bot = commands.Bot(command_prefix=commands.when_mentioned_or("&"),
                    description='This is Botくん2号.')
@@ -179,15 +179,49 @@ async def on_ready():
     print('Logged in as {0} ({0.id})'.format(bot.user))
     print('------')
 
+def help_mention():
+    embed = discord.Embed(title="Botくん2号", description='Bot2号くんです！（1号も一応いる）\n話しかけると創作のためのお題を出すよ！', color=0x74e6bc)
+    embed.add_field(name="コマンドの紹介",
+                    value="コマンドをいくつか紹介するよ！\nまずメンション*「@Botくん2号」*で話しかけよう！\n\n",
+                    inline=False)
+    embed.add_field(name="ヘルプ", value="*「@Botくん2号 ヘルプ」*って書き込むと、このヘルプが見られるよ！", inline=False)
+    embed.add_field(name="三題噺", value="三題噺関連は*「@Botくん2号 三題噺」*から始まるよ！", inline=False)
+    embed.add_field(name="お絵かき", value="お絵かき関連は*「@Botくん2号 お絵かき」*から始まるよ！\nでも、まだ未実装なんだ......ごめんね？", inline=False)
+    embed.add_field(name="@Botくん2号 三題噺",
+                    value="*「@Botくん2号 三題噺 お題」*であなたの今日のお題を出すよ！\n \
+                    *「@Botくん2号 三題噺 ジャンル」*で登録されてる**ジャンル**を確認できるよ！\n \
+                    *「@Botくん2号 三題噺 ジャンル 追加」*の後に「 」半角スペース区切りでジャンルを書き込むとジャンルを登録できるよ！\n \
+                    *「@Botくん2号 三題噺 ジャンル 削除」*の後に「 」半角スペース区切りでジャンルを書き込むと指定したジャンルを消せるよ！\n \
+                    例えば、*「@Botくん2号 三題噺 ジャンル 追加 シリアス ほのぼの」*みたいな感じだよ！\n \
+                    「ジャンル」を「トピック」に変えて書き込むと三題噺のお題である**トピック**について扱うことができるよ！\n\n \
+                    いろんな言葉を追加していってね！",
+                    inline=False)
+    embed.add_field(name="Version", value=version)
+    # give info about you here
+    embed.add_field(name="Author", value="雅猫")
+    # Shows the number of servers the bot is member of.
+    embed.add_field(name="Server count", value=f"{len(bot.guilds)}")
+    # give users a link to invite thsi bot to their server
+    embed.add_field(name="Invite", value="https://discordapp.com/api/oauth2/authorize?client_id=493926028620857364&permissions=27712&scope=bot")
+    return embed
+
 @bot.event # イベントを受信するための構文（デコレータ）
 async def on_message(message):
-    if not 0 < len([ menber for menber in message.mentions if member.id == bot.user.id]):
+    if not 0 < len([ member for member in message.mentions if member.id == bot.user.id]):
         return
+
+    arg = message.content.split()
+    if len(arg) == 1:
+        await message.channel.send(f'やあ{message.author.mention}さん！元気かい？\nヘルプを見る場合は*「@Botくん2号 ヘルプ」*って書き込んでね！')
+        return
+
     theme_bot = ThemeBot(bot)
-    commands = message.content.split()[1:]
-    if commands[0] == "三題噺":
+    commands = arg[1:]
+    if commands[0] == "ヘルプ":
+        await message.channel.send(embed=help_mention())
+    elif commands[0] == "三題噺":
         if commands[1] == "お題":
-            message.content = f'three_topics {message.author}'
+            message.content = f'three_topics {message.author.name}'
             await message.channel.send(f'{message.author.mention}', embed=theme_bot.get_three_topics(message))
         elif commands[1] == "ジャンル":
             if not 2 < len(commands):
@@ -196,7 +230,7 @@ async def on_message(message):
                 await message.channel.send(theme_bot.add_record('genres', commands[3:]))
             elif commands[2] == "削除":
                 await message.channel.send(theme_bot.del_record('genres', commands[3:]))
-        elif commands == "トピック":
+        elif commands[1] == "トピック":
             if not 2 < len(commands):
                 await message.channel.send(theme_bot.get_list('topics'))
             elif commands[2] == "追加":
@@ -206,4 +240,4 @@ async def on_message(message):
 
 
 bot.add_cog(ThemeBot(bot))
-# bot.run(token)
+bot.run(token)
