@@ -240,4 +240,4 @@ async def on_message(message):
 
 
 bot.add_cog(ThemeBot(bot))
-bot.run(token)
+# bot.run(token)
