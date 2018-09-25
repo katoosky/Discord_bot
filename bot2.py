@@ -187,7 +187,7 @@ async def on_message(message):
     commands = message.content.split()[1:]
     if commands[0] == "三題噺":
         if commands[1] == "お題":
-            message.content = f'three_topics {message.author}''
+            message.content = f'three_topics {message.author}'
             await message.channel.send(f'{message.author.mention}', embed=theme_bot.get_three_topics(message))
         elif commands[1] == "ジャンル":
             if not 2 < len(commands):
