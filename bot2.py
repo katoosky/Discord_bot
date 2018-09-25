@@ -24,13 +24,13 @@ Botくん1号 Commands
         Show Bot informations.
     &three_topics NAME
         Generate three topics for sandaibanashi.
-    &add_genre GENRE
-        Add a new genre to database.
+    &add_genres GENRE [GENRE ...]
+        Add new genres to database.
     &show_genres [LIMIT]
         Show genre list.
         If use LIMIT option, Show latest genres as many as the LIMIT option.
-    &add_topic TOPIC
-        Add a new topic to database.
+    &add_topics TOPIC [TOPIC ...]
+        Add new topics to database.
     &show_topics [LIMIT]
         Show topic list.
         If use LIMIT option, Show latest topics as many as the LIMIT option.
@@ -108,7 +108,6 @@ ID      VALUE
         return self.get_list(table, limit)
 
     def add_record(self, table, ctx):
-        value = ctx.message.content.split()[1]
         result = []
         with psycopg2.connect(dsn) as conn:
             with conn.cursor() as cur:
@@ -118,14 +117,15 @@ ID      VALUE
                     cur.execute("create table {0} (id serial, value varchar(50) unique)".format(table))
                     conn.commit()
                     result.append("create table '{0}'.".format(table))
-                # レコードが存在するかチェックして追加
-                cur.execute("SELECT * FROM {0} WHERE value = '{1}'".format(table, value))
-                if cur.fetchone() is None:
-                    cur.execute("INSERT INTO {0} (value) VALUES ('{1}')".format(table, value))
-                    conn.commit()
-                    result.append("add value '{1}' to '{0}'.".format(table, value))
-                else:
-                    result.append("value '{1}' is already exist in '{0}'.".format(table, value))
+                for value in ctx.message.content.split()[1:]:
+                    # レコードが存在するかチェックして追加
+                    cur.execute("SELECT * FROM {0} WHERE value = '{1}'".format(table, value))
+                    if cur.fetchone() is None:
+                        cur.execute("INSERT INTO {0} (value) VALUES ('{1}')".format(table, value))
+                        conn.commit()
+                        result.append("add value '{1}' to '{0}'.".format(table, value))
+                    else:
+                        result.append("value '{1}' is already exist in '{0}'.".format(table, value))
 
         return '```'+"\n".join(result)+'```'
     
