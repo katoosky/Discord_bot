@@ -41,7 +41,7 @@ Botくん1号 Commands
 
     @commands.command()
     async def help(self, ctx):
-        await ctx.send('```'+help_text+'```')
+        await ctx.send('```'+self.help_text+'```')
 
     @commands.command()
     async def info(self, ctx):
