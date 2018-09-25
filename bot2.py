@@ -63,7 +63,36 @@ Botくん1号 Commands
     # 三題噺
     @commands.command()
     async def three_topics(self, ctx):
-        command = ctx.message.content.split()
+        await ctx.send(embed=self.get_three_topics(ctx.message))
+
+    @commands.command()
+    async def add_genres(self, ctx):
+        await ctx.send(self.add_record("genres", ctx.message.content.split()[1:]))
+
+    @commands.command()
+    async def show_genres(self, ctx):
+        await ctx.send(self.show_values('genres', ctx.message))
+
+    @commands.command()
+    async def del_genres(self, ctx):
+        await ctx.send(self.del_record('genres', ctx.message.content.split()[1:]))
+
+    @commands.command()
+    async def add_topics(self, ctx):
+        await ctx.send(self.add_record("topics", ctx.message.content.split()[1:]))
+
+    @commands.command()
+    async def show_topics(self, ctx):
+        await ctx.send(self.show_values('topics', ctx.message))
+
+    @commands.command()
+    async def del_topics(self, ctx):
+        await ctx.send(self.del_record('topics', ctx.message.content.split()[1:]))
+
+    # 絵のお題
+
+    def get_three_topics(self, message):
+        command = message.content.split()
         user = command[1] if 1 < len(command) else None
         if user is not None:
             random.seed(date.today().strftime('%Y%m%d')+user)
@@ -78,36 +107,9 @@ Botくん1号 Commands
         embed.add_field(name="1つ目のお題", value=topics[0]['value'])
         embed.add_field(name="2つ目のお題", value=topics[1]['value'])
         embed.add_field(name="3つ目のお題", value=topics[2]['value'])
-        await ctx.send(embed=embed)
+        return embed
 
-    @commands.command()
-    async def add_genres(self, ctx):
-        await ctx.send(self.add_record("genres", ctx))
-
-    @commands.command()
-    async def show_genres(self, ctx):
-        await ctx.send(self.show_values('genres', ctx))
-
-    @commands.command()
-    async def del_genres(self, ctx):
-        await ctx.send(self.del_record('genres', ctx))
-
-    @commands.command()
-    async def add_topics(self, ctx):
-        await ctx.send(self.add_record("topics", ctx))
-
-    @commands.command()
-    async def show_topics(self, ctx):
-        await ctx.send(self.show_values('topics', ctx))
-
-    @commands.command()
-    async def del_topics(self, ctx):
-        await ctx.send(self.del_record('topics', ctx))
-
-    # 絵のお題
-
-
-    def get_list(self, table, limit):
+    def get_list(self, table, limit=0):
         values = self.fetchall(table)
         result = "```" + """
 ID      VALUE
@@ -118,12 +120,12 @@ ID      VALUE
         result += "```"
         return result
 
-    def show_values(self, table, ctx):
-        command = ctx.message.content.split()
+    def show_values(self, table, message):
+        command = message.content.split()
         limit = int(command[1]) if 1 < len(command) else 0
         return self.get_list(table, limit)
 
-    def add_record(self, table, ctx):
+    def add_record(self, table, values):
         result = []
         with psycopg2.connect(dsn) as conn:
             with conn.cursor() as cur:
@@ -133,7 +135,7 @@ ID      VALUE
                     cur.execute("create table {0} (id serial, value varchar(50) unique)".format(table))
                     conn.commit()
                     result.append("create table '{0}'.".format(table))
-                for value in ctx.message.content.split()[1:]:
+                for value in values:
                     # レコードが存在するかチェックして追加
                     cur.execute("SELECT * FROM {0} WHERE value = '{1}'".format(table, value))
                     if cur.fetchone() is None:
@@ -145,7 +147,7 @@ ID      VALUE
 
         return '```'+"\n".join(result)+'```'
 
-    def del_record(self, table, ctx):
+    def del_record(self, table, values):
         result = []
         with psycopg2.connect(dsn) as conn:
             with conn.cursor() as cur:
@@ -154,7 +156,7 @@ ID      VALUE
                 if cur.fetchone() is None:
                     result.append("table '{0}' is not exist.".format(table))
                     return '```'+"\n".join(result)+'```'
-                for value in ctx.message.content.split()[1:]:
+                for value in values:
                     # レコードが存在するかチェックして追加
                     cur.execute("SELECT * FROM {0} WHERE value = '{1}'".format(table, value))
                     if cur.fetchone() is None:
@@ -176,6 +178,32 @@ ID      VALUE
 async def on_ready():
     print('Logged in as {0} ({0.id})'.format(bot.user))
     print('------')
+
+@bot.event # イベントを受信するための構文（デコレータ）
+async def on_message(message):
+    if not 0 < len([ menber for menber in message.mentions if member.id == bot.user.id]):
+        return
+    theme_bot = ThemeBot(bot)
+    commands = message.content.split()[1:]
+    if commands[0] == "三題噺":
+        if commands[1] == "お題":
+            message.content = f'three_topics {message.author}''
+            await message.channel.send(f'{message.author.mention}', embed=theme_bot.get_three_topics(message))
+        elif commands[1] == "ジャンル":
+            if not 2 < len(commands):
+                await message.channel.send(theme_bot.get_list('genres'))
+            elif commands[2] == "追加":
+                await message.channel.send(theme_bot.add_record('genres', commands[3:]))
+            elif commands[2] == "削除":
+                await message.channel.send(theme_bot.del_record('genres', commands[3:]))
+        elif commands == "トピック":
+            if not 2 < len(commands):
+                await message.channel.send(theme_bot.get_list('topics'))
+            elif commands[2] == "追加":
+                await message.channel.send(theme_bot.add_record('topics', commands[3:]))
+            elif commands[2] == "削除":
+                await message.channel.send(theme_bot.del_record('topics', commands[3:]))
+
 
 bot.add_cog(ThemeBot(bot))
 # bot.run(token)
