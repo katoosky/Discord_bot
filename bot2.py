@@ -7,7 +7,7 @@ import psycopg2
 from psycopg2.extras import DictCursor
 
 # 変数
-version="1.0.0"
+version="1.0.1"
 token = "NDkzOTI2MDI4NjIwODU3MzY0.DosFJA.1Hzepp-iPyU-MFk__HZ9-JKsY8g"
 bot = commands.Bot(command_prefix=commands.when_mentioned_or("&"),
                    description='This is Botくん2号.')
@@ -29,11 +29,15 @@ Botくん1号 Commands
     &show_genres [LIMIT]
         Show genre list.
         If use LIMIT option, Show latest genres as many as the LIMIT option.
+    &del_genres GENRE [GENRE ...]
+        Delete genres.
     &add_topics TOPIC [TOPIC ...]
         Add new topics to database.
     &show_topics [LIMIT]
         Show topic list.
         If use LIMIT option, Show latest topics as many as the LIMIT option.
+    &del_genres TOPIC [TOPIC ...]
+        Delete topics.
 """
 
     def __init__(self, bot):
@@ -56,6 +60,7 @@ Botくん1号 Commands
         embed.add_field(name="Invite", value="https://discordapp.com/api/oauth2/authorize?client_id=493926028620857364&permissions=27712&scope=bot")
         await ctx.send(embed=embed)
 
+    # 三題噺
     @commands.command()
     async def three_topics(self, ctx):
         command = ctx.message.content.split()
@@ -84,12 +89,23 @@ Botくん1号 Commands
         await ctx.send(self.show_values('genres', ctx))
 
     @commands.command()
+    async def del_genres(self, ctx):
+        await ctx.send(self.del_record('genres', ctx))
+
+    @commands.command()
     async def add_topics(self, ctx):
         await ctx.send(self.add_record("topics", ctx))
 
     @commands.command()
     async def show_topics(self, ctx):
         await ctx.send(self.show_values('topics', ctx))
+
+    @commands.command()
+    async def del_topics(self, ctx):
+        await ctx.send(self.del_record('topics', ctx))
+
+    # 絵のお題
+
 
     def get_list(self, table, limit):
         values = self.fetchall(table)
@@ -126,6 +142,27 @@ ID      VALUE
                         result.append("add value '{1}' to '{0}'.".format(table, value))
                     else:
                         result.append("value '{1}' is already exist in '{0}'.".format(table, value))
+
+        return '```'+"\n".join(result)+'```'
+
+    def del_record(self, table, ctx):
+        result = []
+        with psycopg2.connect(dsn) as conn:
+            with conn.cursor() as cur:
+                # テーブルが存在するかチェック
+                cur.execute("SELECT * FROM pg_tables where tablename='{0}'".format(table))
+                if cur.fetchone() is None:
+                    result.append("table '{0}' is not exist.".format(table))
+                    return '```'+"\n".join(result)+'```'
+                for value in ctx.message.content.split()[1:]:
+                    # レコードが存在するかチェックして追加
+                    cur.execute("SELECT * FROM {0} WHERE value = '{1}'".format(table, value))
+                    if cur.fetchone() is None:
+                        result.append("value '{1}' is not exist in '{0}'.".format(table, value))
+                    else:
+                        cur.execute("DELETE FROM {0} WHERE value = '{1}'".format(table, value))
+                        conn.commit()
+                        result.append("delete value '{1}' from '{0}'.".format(table, value))
 
         return '```'+"\n".join(result)+'```'
     
