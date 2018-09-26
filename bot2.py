@@ -218,7 +218,7 @@ def help_mention():
     embed.add_field(name="三題噺", value="三題噺関連は*「@Botくん2号 三題噺」*から始まるよ！", inline=False)
     embed.add_field(name="お絵かき", value="お絵かき関連は*「@Botくん2号 お絵かき」*から始まるよ！\nでも、まだ未実装なんだ......ごめんね？", inline=False)
     add_help_three_topics(embed)
-    add_help_drawing(embed)
+    # add_help_drawing(embed)
     embed.add_field(name="Version", value=version)
     # give info about you here
     embed.add_field(name="Author", value="雅猫")
