@@ -288,7 +288,7 @@ async def on_message(message):
             await message.channel.send(embed=embed)
         for key, table in theme_bot.three_topics_table.items():
             if commands[1] == key:
-                manage_table(commands, table)
+                await manage_table(commands, table)
     elif commands[0] == "お絵かき" or commands[0] == "お絵描き":
         if commands[1] == "お題":
             pass
@@ -299,7 +299,7 @@ async def on_message(message):
         for key, table in theme_bot.drawing_table.items():
             pass
             # if commands[1] == key:
-            #     manage_table(commands, table)
+            #     await manage_table(commands, table)
 
 
 bot.add_cog(ThemeBot(bot))
