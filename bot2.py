@@ -252,7 +252,7 @@ def help_mention():
     embed.add_field(name="Invite", value="https://discordapp.com/api/oauth2/authorize?client_id=493926028620857364&permissions=27712&scope=bot")
     return embed
 
-def manage_table(commands, table):
+async def manage_table(commands, table):
     if not 2 < len(commands):
         await message.channel.send(theme_bot.get_list(table))
     elif commands[2] == "追加":
