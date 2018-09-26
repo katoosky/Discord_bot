@@ -244,7 +244,7 @@ async def on_message(message):
     elif commands[0] == "お絵かき" or commands[0] == "お絵描き":
         if commands[1] == "お題":
             pass
-        elif commands[1] == "種族"":
+        elif commands[1] == "種族":
             pass
         elif commands[1] == "性別":
             pass
