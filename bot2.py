@@ -7,7 +7,7 @@ import psycopg2
 from psycopg2.extras import DictCursor
 
 # 変数
-version="1.1.8"
+version="1.1.9"
 token = "NDkzOTI2MDI4NjIwODU3MzY0.DosFJA.1Hzepp-iPyU-MFk__HZ9-JKsY8g"
 bot = commands.Bot(command_prefix=commands.when_mentioned_or("&"),
                    description='This is Botくん2号.')
@@ -40,6 +40,27 @@ Botくん1号 Commands
         Delete topics.
 """
 
+    three_topics_table = {
+        'ジャンル': 'genres',
+        'トピック': 'topics',
+    }
+    drawing_table = {
+        'キャラクター': 'character',
+        '種族': 'race',
+        '性別': 'sex',
+        '年齢': 'age',
+        '髪型': 'hair_style',
+        '髪色': 'hair_color',
+        '瞳の色': 'eye_color',
+        '体型': 'body',
+        '性格': 'personality',
+        '服装': 'style',
+        '特徴': 'characteristics',
+        'モチーフ': 'motif',
+        'ポーズ': 'pose',
+        'シチュエーション': 'situation',
+    }
+
     def __init__(self, bot):
         self.bot = bot
 
@@ -50,7 +71,7 @@ Botくん1号 Commands
     @commands.command()
     async def info(self, ctx):
         """Show Bot informations."""
-        embed = discord.Embed(title="Botくん2号", description='This is Botくん2号. This bot suggest a theme of creation.\nSend "!help", you can show commands.', color=0x74e6bc)
+        embed = discord.Embed(title="Botくん2号", description='This is Botくん2号. This bot suggest a theme of creation.\nSend "&help", you can show commands.', color=0x74e6bc)
         embed.add_field(name="Version", value=version)
         # give info about you here
         embed.add_field(name="Author", value="雅猫")
@@ -67,27 +88,27 @@ Botくん1号 Commands
 
     @commands.command()
     async def add_genres(self, ctx):
-        await ctx.send(self.add_record("genres", ctx.message.content.split()[1:]))
+        await ctx.send(self.add_record(self.three_topics_table['ジャンル'], ctx.message.content.split()[1:]))
 
     @commands.command()
     async def show_genres(self, ctx):
-        await ctx.send(self.show_values('genres', ctx.message))
+        await ctx.send(self.show_values(self.three_topics_table['ジャンル'], ctx.message))
 
     @commands.command()
     async def del_genres(self, ctx):
-        await ctx.send(self.del_record('genres', ctx.message.content.split()[1:]))
+        await ctx.send(self.del_record(self.three_topics_table['ジャンル'], ctx.message.content.split()[1:]))
 
     @commands.command()
     async def add_topics(self, ctx):
-        await ctx.send(self.add_record("topics", ctx.message.content.split()[1:]))
+        await ctx.send(self.add_record(self.three_topics_table['トピック'], ctx.message.content.split()[1:]))
 
     @commands.command()
     async def show_topics(self, ctx):
-        await ctx.send(self.show_values('topics', ctx.message))
+        await ctx.send(self.show_values(self.three_topics_table['トピック'], ctx.message))
 
     @commands.command()
     async def del_topics(self, ctx):
-        await ctx.send(self.del_record('topics', ctx.message.content.split()[1:]))
+        await ctx.send(self.del_record(self.three_topics_table['トピック'], ctx.message.content.split()[1:]))
 
     # 絵のお題
 
@@ -96,8 +117,8 @@ Botくん1号 Commands
         user = command[1] if 1 < len(command) else None
         if user is not None:
             random.seed(date.today().strftime('%Y%m%d')+user)
-        genre = random.sample(self.fetchall('genres'), 1)
-        topics = random.sample(self.fetchall('topics'), 3)
+        genre = random.sample(self.fetchall(self.three_topics_table['ジャンル']), 1)
+        topics = random.sample(self.fetchall(self.three_topics_table['トピック']), 3)
 
         title = "今日の{0}さんのお題".format(user) if user is not None else "お題"
         description = "今日の{0}さんのお題はこちら！\n".format(user) if user is not None else ""
@@ -179,6 +200,9 @@ async def on_ready():
     print('Logged in as {0} ({0.id})'.format(bot.user))
     print('------')
 
+"""
+ここから下はメンションで操作するコマンド関連
+"""
 @bot.event
 async def on_guild_join(guild):
     await guild.system_channel.send('初めましてBotくん2号だよ\nヘルプを見る場合は*「@Botくん2号 ヘルプ」*って書き込んでね！\n**コマンドを使用するときは一時チャットかDMを使いましょう**')
@@ -228,6 +252,15 @@ def help_mention():
     embed.add_field(name="Invite", value="https://discordapp.com/api/oauth2/authorize?client_id=493926028620857364&permissions=27712&scope=bot")
     return embed
 
+def manage_table(commands, table):
+    if not 2 < len(commands):
+        await message.channel.send(theme_bot.get_list(table))
+    elif commands[2] == "追加":
+        await message.channel.send(theme_bot.add_record(table, commands[3:]))
+    elif commands[2] == "削除":
+        await message.channel.send(theme_bot.del_record(table, commands[3:]))
+
+
 @bot.event # イベントを受信するための構文（デコレータ）
 async def on_message(message):
     ctx = await bot.get_context(message)
@@ -253,20 +286,9 @@ async def on_message(message):
             embed = discord.Embed(title="コマンドの使い方、三題噺編！", description='三題噺のお題に関するコマンドの使い方について説明するよ！', color=0x74e6bc)
             add_help_three_topics(embed)
             await message.channel.send(embed=embed)
-        elif commands[1] == "ジャンル":
-            if not 2 < len(commands):
-                await message.channel.send(theme_bot.get_list('genres'))
-            elif commands[2] == "追加":
-                await message.channel.send(theme_bot.add_record('genres', commands[3:]))
-            elif commands[2] == "削除":
-                await message.channel.send(theme_bot.del_record('genres', commands[3:]))
-        elif commands[1] == "トピック":
-            if not 2 < len(commands):
-                await message.channel.send(theme_bot.get_list('topics'))
-            elif commands[2] == "追加":
-                await message.channel.send(theme_bot.add_record('topics', commands[3:]))
-            elif commands[2] == "削除":
-                await message.channel.send(theme_bot.del_record('topics', commands[3:]))
+        for key, table in theme_bot.three_topics_table.items():
+            if commands[1] == key:
+                manage_table(commands, table)
     elif commands[0] == "お絵かき" or commands[0] == "お絵描き":
         if commands[1] == "お題":
             pass
@@ -274,34 +296,10 @@ async def on_message(message):
             embed = discord.Embed(title="コマンドの使い方、お絵かき編！", description='**まだ実装中です**\nお絵かきのお題に関するコマンドの使い方について説明するよ！', color=0x74e6bc)
             add_help_drawing(embed)
             await message.channel.send(embed=embed)
-        elif commands[1] == "キャラクター":
+        for key, table in theme_bot.drawing_table.items():
             pass
-        elif commands[1] == "種族":
-            pass
-        elif commands[1] == "性別":
-            pass
-        elif commands[1] == "年齢":
-            pass
-        elif commands[1] == "髪型":
-            pass
-        elif commands[1] == "髪色":
-            pass
-        elif commands[1] == "瞳の色":
-            pass
-        elif commands[1] == "体型":
-            pass
-        elif commands[1] == "性格":
-            pass
-        elif commands[1] == "服装":
-            pass
-        elif commands[1] == "特徴":
-            pass
-        elif commands[1] == "モチーフ":
-            pass
-        elif commands[1] == "ポーズ":
-            pass
-        elif commands[1] == "シチュエーション":
-            pass
+            # if commands[1] == key:
+            #     manage_table(commands, table)
 
 
 bot.add_cog(ThemeBot(bot))
