@@ -252,13 +252,13 @@ def help_mention():
     embed.add_field(name="Invite", value="https://discordapp.com/api/oauth2/authorize?client_id=493926028620857364&permissions=27712&scope=bot")
     return embed
 
-async def manage_table(message, commands, table):
+async def manage_table(bot, message, commands, table):
     if not 2 < len(commands):
-        await message.channel.send(theme_bot.get_list(table))
+        await message.channel.send(bot.get_list(table))
     elif commands[2] == "追加":
-        await message.channel.send(theme_bot.add_record(table, commands[3:]))
+        await message.channel.send(bot.add_record(table, commands[3:]))
     elif commands[2] == "削除":
-        await message.channel.send(theme_bot.del_record(table, commands[3:]))
+        await message.channel.send(bot.del_record(table, commands[3:]))
 
 
 @bot.event # イベントを受信するための構文（デコレータ）
@@ -288,7 +288,7 @@ async def on_message(message):
             await message.channel.send(embed=embed)
         for key, table in theme_bot.three_topics_table.items():
             if commands[1] == key:
-                await manage_table(message, commands, table)
+                await manage_table(theme_bot, message, commands, table)
     elif commands[0] == "お絵かき" or commands[0] == "お絵描き":
         if commands[1] == "お題":
             pass
@@ -299,7 +299,7 @@ async def on_message(message):
         for key, table in theme_bot.drawing_table.items():
             pass
             # if commands[1] == key:
-            #     await manage_table(message, commands, table)
+            #     await manage_table(theme_bot, message, commands, table)
 
 
 bot.add_cog(ThemeBot(bot))
