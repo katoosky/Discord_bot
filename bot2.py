@@ -7,7 +7,7 @@ import psycopg2
 from psycopg2.extras import DictCursor
 
 # 変数
-version="1.1.4"
+version="1.1.5"
 token = "NDkzOTI2MDI4NjIwODU3MzY0.DosFJA.1Hzepp-iPyU-MFk__HZ9-JKsY8g"
 bot = commands.Bot(command_prefix=commands.when_mentioned_or("&"),
                    description='This is Botくん2号.')
@@ -111,7 +111,7 @@ Botくん1号 Commands
 
     def get_list(self, table, limit=0):
         values = self.fetchall(table)
-        result = "```" + """
+        result = "```" + f"""table
 ID      VALUE
 ————————————————————————————————————————————
 """
@@ -241,6 +241,27 @@ async def on_message(message):
                 await message.channel.send(theme_bot.add_record('topics', commands[3:]))
             elif commands[2] == "削除":
                 await message.channel.send(theme_bot.del_record('topics', commands[3:]))
+    elif commands[0] == "お絵かき" or commands[0] == "お絵描き":
+        if commands[1] == "お題":
+            pass
+        elif commands[1] == "種族"":
+            pass
+        elif commands[1] == "性別":
+            pass
+        elif commands[1] == "髪型":
+            pass
+        elif commands[1] == "髪色":
+            pass
+        elif commands[1] == "体型":
+            pass
+        elif commands[1] == "服装":
+            pass
+        elif commands[1] == "モチーフ":
+            pass
+        elif commands[1] == "ポーズ":
+            pass
+        elif commands[1] == "場面":
+            pass
 
 
 bot.add_cog(ThemeBot(bot))
