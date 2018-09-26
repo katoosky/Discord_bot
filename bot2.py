@@ -7,7 +7,7 @@ import psycopg2
 from psycopg2.extras import DictCursor
 
 # 変数
-version="1.1.7"
+version="1.1.8"
 token = "NDkzOTI2MDI4NjIwODU3MzY0.DosFJA.1Hzepp-iPyU-MFk__HZ9-JKsY8g"
 bot = commands.Bot(command_prefix=commands.when_mentioned_or("&"),
                    description='This is Botくん2号.')
@@ -95,7 +95,6 @@ Botくん1号 Commands
         command = message.content.split()
         user = command[1] if 1 < len(command) else None
         if user is not None:
-            print(date.today())
             random.seed(date.today().strftime('%Y%m%d')+user)
         genre = random.sample(self.fetchall('genres'), 1)
         topics = random.sample(self.fetchall('topics'), 3)
@@ -231,7 +230,8 @@ def help_mention():
 
 @bot.event # イベントを受信するための構文（デコレータ）
 async def on_message(message):
-    if message.content.startswith(bot.command_prefix):
+    ctx = await bot.get_context(message)
+    if ctx.command is not None:
         await bot.process_commands(message)
     if not 0 < len([ member for member in message.mentions if member.id == bot.user.id]):
         return
