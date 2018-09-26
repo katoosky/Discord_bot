@@ -230,6 +230,7 @@ def help_mention():
 
 @bot.event # イベントを受信するための構文（デコレータ）
 async def on_message(message):
+    await bot.process_commands(message)
     if not 0 < len([ member for member in message.mentions if member.id == bot.user.id]):
         return
 
@@ -298,4 +299,4 @@ async def on_message(message):
 
 
 bot.add_cog(ThemeBot(bot))
-# bot.run(token)
+bot.run(token)
