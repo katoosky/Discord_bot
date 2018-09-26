@@ -111,7 +111,7 @@ Botくん1号 Commands
 
     def get_list(self, table, limit=0):
         values = self.fetchall(table)
-        result = "```table: " + table + """
+        result = f"```table: {table}" + """
 ID      VALUE
 ————————————————————————————————————————————
 """
