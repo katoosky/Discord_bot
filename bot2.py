@@ -95,6 +95,7 @@ Botくん1号 Commands
         command = message.content.split()
         user = command[1] if 1 < len(command) else None
         if user is not None:
+            print(date.today())
             random.seed(date.today().strftime('%Y%m%d')+user)
         genre = random.sample(self.fetchall('genres'), 1)
         topics = random.sample(self.fetchall('topics'), 3)
@@ -230,7 +231,8 @@ def help_mention():
 
 @bot.event # イベントを受信するための構文（デコレータ）
 async def on_message(message):
-    await bot.process_commands(message)
+    if message.content.startswith(bot.command_prefix):
+        await bot.process_commands(message)
     if not 0 < len([ member for member in message.mentions if member.id == bot.user.id]):
         return
 
@@ -278,9 +280,13 @@ async def on_message(message):
             pass
         elif commands[1] == "性別":
             pass
+        elif commands[1] == "年齢":
+            pass
         elif commands[1] == "髪型":
             pass
         elif commands[1] == "髪色":
+            pass
+        elif commands[1] == "瞳の色":
             pass
         elif commands[1] == "体型":
             pass
@@ -299,4 +305,4 @@ async def on_message(message):
 
 
 bot.add_cog(ThemeBot(bot))
-bot.run(token)
+# bot.run(token)
