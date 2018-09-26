@@ -7,7 +7,7 @@ import psycopg2
 from psycopg2.extras import DictCursor
 
 # 変数
-version="1.1.3"
+version="1.1.4"
 token = "NDkzOTI2MDI4NjIwODU3MzY0.DosFJA.1Hzepp-iPyU-MFk__HZ9-JKsY8g"
 bot = commands.Bot(command_prefix=commands.when_mentioned_or("&"),
                    description='This is Botくん2号.')
@@ -179,8 +179,12 @@ async def on_ready():
     print('Logged in as {0} ({0.id})'.format(bot.user))
     print('------')
 
+@bot.event
+async def on_guild_join(guild):
+    await guild.system_channel.send('初めましてBotくん2号だよ\nヘルプを見る場合は*「@Botくん2号 ヘルプ」*って書き込んでね！\n**コマンドを使用するときは一時チャットかDMを使いましょう**')
+
 def help_mention():
-    embed = discord.Embed(title="Botくん2号", description='Bot2号くんです！（1号も一応いる）\n話しかけると創作のためのお題を出すよ！\n**コマンドを使用するときは一時チャットを使いましょう！**', color=0x74e6bc)
+    embed = discord.Embed(title="Botくん2号", description='Bot2号くんです！（1号も一応いる）\n話しかけると創作のためのお題を出すよ！\n**コマンドを使用するときは一時チャットかDMを使いましょう！**', color=0x74e6bc)
     embed.add_field(name="コマンドの紹介",
                     value="コマンドをいくつか紹介するよ！\nまずメンション*「@Botくん2号」*で話しかけよう！\n\n",
                     inline=False)
@@ -212,7 +216,7 @@ async def on_message(message):
 
     arg = message.content.split()
     if len(arg) == 1:
-        await message.channel.send(f'やあ{message.author.mention}さん！元気かい？\nヘルプを見る場合は*「@Botくん2号 ヘルプ」*って書き込んでね！\n*コマンドを使用するときは一時チャットを使いましょう！**')
+        await message.channel.send(f'やあ{message.author.mention}さん！元気かい？\nヘルプを見る場合は*「@Botくん2号 ヘルプ」*って書き込んでね！\n**コマンドを使用するときは一時チャットかDMを使いましょう！**')
         return
 
     theme_bot = ThemeBot(bot)
