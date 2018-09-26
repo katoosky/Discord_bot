@@ -7,7 +7,7 @@ import psycopg2
 from psycopg2.extras import DictCursor
 
 # 変数
-version="1.1.5"
+version="1.1.6"
 token = "NDkzOTI2MDI4NjIwODU3MzY0.DosFJA.1Hzepp-iPyU-MFk__HZ9-JKsY8g"
 bot = commands.Bot(command_prefix=commands.when_mentioned_or("&"),
                    description='This is Botくん2号.')
@@ -218,6 +218,7 @@ def help_mention():
     embed.add_field(name="三題噺", value="三題噺関連は*「@Botくん2号 三題噺」*から始まるよ！", inline=False)
     embed.add_field(name="お絵かき", value="お絵かき関連は*「@Botくん2号 お絵かき」*から始まるよ！\nでも、まだ未実装なんだ......ごめんね？", inline=False)
     add_help_three_topics(embed)
+    add_help_drawing(embed)
     embed.add_field(name="Version", value=version)
     # give info about you here
     embed.add_field(name="Author", value="雅猫")
@@ -248,6 +249,7 @@ async def on_message(message):
         elif commands[1] == "ヘルプ":
             embed = discord.Embed(title="コマンドの使い方、三題噺編！", description='三題噺のお題に関するコマンドの使い方について説明するよ！', color=0x74e6bc)
             add_help_three_topics(embed)
+            await message.channel.send(embed=embed)
         elif commands[1] == "ジャンル":
             if not 2 < len(commands):
                 await message.channel.send(theme_bot.get_list('genres'))
@@ -268,6 +270,7 @@ async def on_message(message):
         elif commands[1] == "ヘルプ":
             embed = discord.Embed(title="コマンドの使い方、お絵かき編！", description='**まだ実装中です**\nお絵かきのお題に関するコマンドの使い方について説明するよ！', color=0x74e6bc)
             add_help_drawing(embed)
+            await message.channel.send(embed=embed)
         elif commands[1] == "キャラクター":
             pass
         elif commands[1] == "種族":
