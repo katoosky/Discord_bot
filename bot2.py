@@ -183,14 +183,7 @@ async def on_ready():
 async def on_guild_join(guild):
     await guild.system_channel.send('初めましてBotくん2号だよ\nヘルプを見る場合は*「@Botくん2号 ヘルプ」*って書き込んでね！\n**コマンドを使用するときは一時チャットかDMを使いましょう**')
 
-def help_mention():
-    embed = discord.Embed(title="Botくん2号", description='Bot2号くんです！（1号も一応いる）\n話しかけると創作のためのお題を出すよ！\n**コマンドを使用するときは一時チャットかDMを使いましょう！**', color=0x74e6bc)
-    embed.add_field(name="コマンドの紹介",
-                    value="コマンドをいくつか紹介するよ！\nまずメンション*「@Botくん2号」*で話しかけよう！\n\n",
-                    inline=False)
-    embed.add_field(name="ヘルプ", value="*「@Botくん2号 ヘルプ」*って書き込むと、このヘルプが見られるよ！", inline=False)
-    embed.add_field(name="三題噺", value="三題噺関連は*「@Botくん2号 三題噺」*から始まるよ！", inline=False)
-    embed.add_field(name="お絵かき", value="お絵かき関連は*「@Botくん2号 お絵かき」*から始まるよ！\nでも、まだ未実装なんだ......ごめんね？", inline=False)
+def add_help_three_topics(embed):
     embed.add_field(name="@Botくん2号 三題噺",
                     value="*「@Botくん2号 三題噺 お題」*であなたの今日のお題を出すよ！\n \
                     *「@Botくん2号 三題噺 ジャンル」*で登録されてる**ジャンル**を確認できるよ！\n \
@@ -200,6 +193,31 @@ def help_mention():
                     「ジャンル」を「トピック」に変えて書き込むと三題噺のお題である**トピック**について扱うことができるよ！\n\n \
                     いろんな言葉を追加していってね！",
                     inline=False)
+
+def add_help_drawing(embed):
+    embed.add_field(name="@Botくん2号 お絵かき",
+                    value="*「@Botくん2号 お絵かき お題」*であなたの今日のお題を出すよ！\n \
+                    お絵かきのお題ではキャラクターの設定の中から5つの設定をお題として出すよ！\n \
+                    *「@Botくん2号 お絵かき [設定]」*で登録されてるキャラクターの設定を確認できるよ！\n \
+                    設定の種類は下の方に書いてあるからそれを参考に[設定]の部分を置き換えてね\n \
+                    *「@Botくん2号 お絵かき [設定] 追加」*の後に「 」半角スペース区切りで設定を書き込むと設定を登録できるよ！\n \
+                    *「@Botくん2号 お絵かき [設定] 削除」*の後に「 」半角スペース区切りで設定を書き込むと指定した設定を消せるよ！\n \
+                    例えば、*「@Botくん2号 お絵かき 特徴 追加 狐耳 エルフ耳」*みたいな感じだよ！\n\n \
+                    いろんな設定を追加していってね！",
+                    inline=False)
+    embed.add_field(name="お絵かき 設定項目一覧",
+                    value="キャラクター、種族、性別、髪型、髪色、体型、性格、服装、特徴、モチーフ、ポーズ、シチュエーション",
+                    inline=False)
+
+def help_mention():
+    embed = discord.Embed(title="Botくん2号", description='Bot2号くんです！（1号も一応いる）\n話しかけると創作のためのお題を出すよ！\n**コマンドを使用するときは一時チャットかDMを使いましょう！**', color=0x74e6bc)
+    embed.add_field(name="コマンドの紹介",
+                    value="コマンドをいくつか紹介するよ！\nまずメンション*「@Botくん2号」*で話しかけよう！\n\n",
+                    inline=False)
+    embed.add_field(name="ヘルプ", value="*「@Botくん2号 ヘルプ」*って書き込むと、このヘルプが見られるよ！", inline=False)
+    embed.add_field(name="三題噺", value="三題噺関連は*「@Botくん2号 三題噺」*から始まるよ！", inline=False)
+    embed.add_field(name="お絵かき", value="お絵かき関連は*「@Botくん2号 お絵かき」*から始まるよ！\nでも、まだ未実装なんだ......ごめんね？", inline=False)
+    add_help_three_topics(embed)
     embed.add_field(name="Version", value=version)
     # give info about you here
     embed.add_field(name="Author", value="雅猫")
@@ -227,6 +245,9 @@ async def on_message(message):
         if commands[1] == "お題":
             message.content = f'three_topics {message.author.name}'
             await message.channel.send(f'{message.author.mention}', embed=theme_bot.get_three_topics(message))
+        elif commands[1] == "ヘルプ":
+            embed = discord.Embed(title="コマンドの使い方、三題噺編！", description='三題噺のお題に関するコマンドの使い方について説明するよ！', color=0x74e6bc)
+            add_help_three_topics(embed)
         elif commands[1] == "ジャンル":
             if not 2 < len(commands):
                 await message.channel.send(theme_bot.get_list('genres'))
@@ -244,6 +265,11 @@ async def on_message(message):
     elif commands[0] == "お絵かき" or commands[0] == "お絵描き":
         if commands[1] == "お題":
             pass
+        elif commands[1] == "ヘルプ":
+            embed = discord.Embed(title="コマンドの使い方、お絵かき編！", description='**まだ実装中です**\nお絵かきのお題に関するコマンドの使い方について説明するよ！', color=0x74e6bc)
+            add_help_drawing(embed)
+        elif commands[1] == "キャラクター":
+            pass
         elif commands[1] == "種族":
             pass
         elif commands[1] == "性別":
@@ -254,13 +280,17 @@ async def on_message(message):
             pass
         elif commands[1] == "体型":
             pass
+        elif commands[1] == "性格":
+            pass
         elif commands[1] == "服装":
+            pass
+        elif commands[1] == "特徴":
             pass
         elif commands[1] == "モチーフ":
             pass
         elif commands[1] == "ポーズ":
             pass
-        elif commands[1] == "場面":
+        elif commands[1] == "シチュエーション":
             pass
 
 
