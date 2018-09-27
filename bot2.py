@@ -7,7 +7,7 @@ import psycopg2
 from psycopg2.extras import DictCursor
 
 # 変数
-version="1.1.10"
+version="1.2.0"
 token = "NDkzOTI2MDI4NjIwODU3MzY0.DosFJA.1Hzepp-iPyU-MFk__HZ9-JKsY8g"
 bot = commands.Bot(command_prefix=commands.when_mentioned_or("&"),
                    description='This is Botくん2号.')
@@ -44,6 +44,7 @@ Botくん1号 Commands
         'ジャンル': 'genres',
         'トピック': 'topics',
     }
+
     drawing_table = {
         'キャラクター': 'character',
         '種族': 'race',
@@ -54,6 +55,10 @@ Botくん1号 Commands
         '瞳の色': 'eye_color',
         '体型': 'body',
         '性格': 'personality',
+        '口癖': 'catch_phrase,
+        '好きなもの': 'favorite',
+        '嫌いなもの': 'dislike',
+        '将来の夢': 'dream',
         '服装': 'style',
         '特徴': 'characteristics',
         'モチーフ': 'motif',
@@ -111,7 +116,11 @@ Botくん1号 Commands
         await ctx.send(self.del_record(self.three_topics_table['トピック'], ctx.message.content.split()[1:]))
 
     # 絵のお題
+    @commands.command()
+    async def drawing(self, ctx):
+        await ctx.send(embed=self.get_drawing(ctx.message))
 
+    # 三題噺の関数
     def get_three_topics(self, message):
         command = message.content.split()
         user = command[1] if 1 < len(command) else None
@@ -130,6 +139,39 @@ Botくん1号 Commands
         embed.add_field(name="3つ目のお題", value=topics[2]['value'])
         return embed
 
+    # お絵かきの関数
+    def get_drawing(self, message):
+        command = message.content.split()
+        user = command[1] if 1 < len(command) else None
+        if user is not None:
+            random.seed(date.today().strftime('%Y%m%d')+user)
+        
+        title = "今日の{0}さんのお題".format(user) if user is not None else "お題"
+        description = "今日の{0}さんのお題はこちら！\n".format(user) if user is not None else ""
+        description += "素敵なイラストを楽しみにしてるよ！"
+        embed = discord.Embed(title=title, description=description, color=0x74e6bc)
+        
+        tables = {}
+        if (random.randrange(len(self.drawing_table)) == 0):
+            tables['キャラクター'] = self.drawing_table['キャラクター']
+            del self.drawing_table['種族']
+            del self.drawing_table['性別']
+            del self.drawing_table['髪色']
+            del self.drawing_table['瞳の色']
+            del self.drawing_table['性格']
+            del self.drawing_table['口癖']
+            del self.drawing_table['好きなもの']
+            del self.drawing_table['嫌いなもの']
+            del self.drawing_table['将来の夢']
+        del self.drawing_table['キャラクター']
+        
+        PICKUP_NUM = 5
+        tables.update([for k, v in random.sample(self.drawing_table.items(), PICKUP_NUM-len(tables))])
+        for name, table in tables:
+            embed.add_field(name=name, value=random.choice(self.fetchall(table)))
+        return embed
+        
+    # 汎用関数
     def get_list(self, table, limit=0):
         values = self.fetchall(table)
         result = f"```table: {table}" + """
@@ -230,7 +272,7 @@ def add_help_drawing(embed):
                     いろんな設定を追加していってね！",
                     inline=False)
     embed.add_field(name="お絵かき 設定項目一覧",
-                    value="キャラクター、種族、性別、髪型、髪色、体型、性格、服装、特徴、モチーフ、ポーズ、シチュエーション",
+                    value="、".join(ThemeBot.drawing_table.keys()),
                     inline=False)
 
 def help_mention():
@@ -291,15 +333,15 @@ async def on_message(message):
                 await manage_table(theme_bot, message, commands, table)
     elif commands[0] == "お絵かき" or commands[0] == "お絵描き":
         if commands[1] == "お題":
-            pass
+            message.content = f'drawing {message.author.name}'
+            await message.channel.send(f'{message.author.mention}', embed=theme_bot.get_drawing(message))
         elif commands[1] == "ヘルプ":
             embed = discord.Embed(title="コマンドの使い方、お絵かき編！", description='**まだ実装中です**\nお絵かきのお題に関するコマンドの使い方について説明するよ！', color=0x74e6bc)
             add_help_drawing(embed)
             await message.channel.send(embed=embed)
         for key, table in theme_bot.drawing_table.items():
-            pass
-            # if commands[1] == key:
-            #     await manage_table(theme_bot, message, commands, table)
+            if commands[1] == key:
+                await manage_table(theme_bot, message, commands, table)
 
 
 bot.add_cog(ThemeBot(bot))
