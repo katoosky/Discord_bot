@@ -7,7 +7,7 @@ import psycopg2
 from psycopg2.extras import DictCursor
 
 # 変数
-version="1.2.0"
+version="1.2.1"
 token = "NDkzOTI2MDI4NjIwODU3MzY0.DosFJA.1Hzepp-iPyU-MFk__HZ9-JKsY8g"
 bot = commands.Bot(command_prefix=commands.when_mentioned_or("&"),
                    description='This is Botくん2号.')
@@ -59,6 +59,7 @@ Botくん1号 Commands
         '好きなもの': 'favorite',
         '嫌いなもの': 'dislike',
         '将来の夢': 'dream',
+        '特技': 'skill',
         '服装': 'style',
         '特徴': 'characteristics',
         'モチーフ': 'motif',
@@ -282,7 +283,7 @@ def help_mention():
                     inline=False)
     embed.add_field(name="ヘルプ", value="*「@Botくん2号 ヘルプ」*って書き込むと、このヘルプが見られるよ！", inline=False)
     embed.add_field(name="三題噺", value="三題噺関連は*「@Botくん2号 三題噺」*から始まるよ！", inline=False)
-    embed.add_field(name="お絵かき", value="お絵かき関連は*「@Botくん2号 お絵かき」*から始まるよ！\nでも、まだ未実装なんだ......ごめんね？", inline=False)
+    embed.add_field(name="お絵かき", value="お絵かき関連は*「@Botくん2号 お絵かき」*から始まるよ！", inline=False)
     add_help_three_topics(embed)
     add_help_drawing(embed)
     embed.add_field(name="Version", value=version)
