@@ -166,7 +166,7 @@ Botくん1号 Commands
         del self.drawing_table['キャラクター']
         
         PICKUP_NUM = 5
-        tables.update([for k, v in random.sample(self.drawing_table.items(), PICKUP_NUM-len(tables))])
+        tables.update([k:v for k, v in random.sample(self.drawing_table.items(), PICKUP_NUM-len(tables))])
         for name, table in tables:
             embed.add_field(name=name, value=random.choice(self.fetchall(table)))
         return embed
