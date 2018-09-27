@@ -153,21 +153,22 @@ Botくん1号 Commands
         embed = discord.Embed(title=title, description=description, color=0x74e6bc)
         
         tables = {}
-        if (random.randrange(len(self.drawing_table)) == 0):
-            tables['キャラクター'] = self.drawing_table['キャラクター']
-            del self.drawing_table['種族']
-            del self.drawing_table['性別']
-            del self.drawing_table['髪色']
-            del self.drawing_table['瞳の色']
-            del self.drawing_table['性格']
-            del self.drawing_table['口癖']
-            del self.drawing_table['好きなもの']
-            del self.drawing_table['嫌いなもの']
-            del self.drawing_table['将来の夢']
-        del self.drawing_table['キャラクター']
+        drawing_table = self.drawing_table.copy()
+        if (random.randrange(len(drawing_table)) == 0):
+            tables['キャラクター'] = drawing_table['キャラクター']
+            del drawing_table['種族']
+            del drawing_table['性別']
+            del drawing_table['髪色']
+            del drawing_table['瞳の色']
+            del drawing_table['性格']
+            del drawing_table['口癖']
+            del drawing_table['好きなもの']
+            del drawing_table['嫌いなもの']
+            del drawing_table['将来の夢']
+        del drawing_table['キャラクター']
         
         PICKUP_NUM = 5
-        tables.update({k:v for k, v in random.sample(self.drawing_table.items(), PICKUP_NUM-len(tables))})
+        tables.update({k:v for k, v in random.sample(drawing_table.items(), PICKUP_NUM-len(tables))})
         for name, table in tables.items():
             embed.add_field(name=name, value=random.choice(self.fetchall(table))['value'])
         return embed
