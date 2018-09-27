@@ -169,7 +169,7 @@ Botくん1号 Commands
         PICKUP_NUM = 5
         tables.update({k:v for k, v in random.sample(self.drawing_table.items(), PICKUP_NUM-len(tables))})
         for name, table in tables.items():
-            embed.add_field(name=name, value=random.choice(self.fetchall(table)))
+            embed.add_field(name=name, value=random.choice(self.fetchall(table))['value'])
         return embed
         
     # 汎用関数
