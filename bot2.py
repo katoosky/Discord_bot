@@ -272,9 +272,13 @@ def add_help_drawing(embed):
                     例えば、*「@Botくん2号 お絵かき 特徴 追加 狐耳 エルフ耳」*みたいな感じだよ！\n\n \
                     いろんな設定を追加していってね！",
                     inline=False)
+    add_help_tables(embed)
+
+def add_help_tables(embed):
     embed.add_field(name="お絵かき 設定項目一覧",
                     value="、".join(ThemeBot.drawing_table.keys()),
                     inline=False)
+
 
 def help_mention():
     embed = discord.Embed(title="Botくん2号", description='Bot2号くんです！（1号も一応いる）\n話しかけると創作のためのお題を出すよ！\n**コマンドを使用するときは一時チャットかDMを使いましょう！**', color=0x74e6bc)
@@ -337,8 +341,12 @@ async def on_message(message):
             message.content = f'drawing {message.author.name}'
             await message.channel.send(f'{message.author.mention}', embed=theme_bot.get_drawing(message))
         elif commands[1] == "ヘルプ":
-            embed = discord.Embed(title="コマンドの使い方、お絵かき編！", description='**まだ実装中です**\nお絵かきのお題に関するコマンドの使い方について説明するよ！', color=0x74e6bc)
+            embed = discord.Embed(title="コマンドの使い方、お絵かき編！", description='お絵かきのお題に関するコマンドの使い方について説明するよ！', color=0x74e6bc)
             add_help_drawing(embed)
+            await message.channel.send(embed=embed)
+        elif commands[1] == "ヘルプ":
+            embed = discord.Embed(title="コマンドの使い方、お絵かきの設定項目", description='お絵かきの設定項目はこちら！', color=0x74e6bc)
+            add_help_tables(embed)
             await message.channel.send(embed=embed)
         for key, table in theme_bot.drawing_table.items():
             if commands[1] == key:
