@@ -344,7 +344,7 @@ async def on_message(message):
             embed = discord.Embed(title="コマンドの使い方、お絵かき編！", description='お絵かきのお題に関するコマンドの使い方について説明するよ！', color=0x74e6bc)
             add_help_drawing(embed)
             await message.channel.send(embed=embed)
-        elif commands[1] == "ヘルプ":
+        elif commands[1] == "設定項目":
             embed = discord.Embed(title="コマンドの使い方、お絵かきの設定項目", description='お絵かきの設定項目はこちら！', color=0x74e6bc)
             add_help_tables(embed)
             await message.channel.send(embed=embed)
