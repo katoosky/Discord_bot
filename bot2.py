@@ -7,7 +7,7 @@ import psycopg2
 from psycopg2.extras import DictCursor
 
 # 変数
-version="1.2.1"
+version="1.2.2"
 token = "NDkzOTI2MDI4NjIwODU3MzY0.DosFJA.1Hzepp-iPyU-MFk__HZ9-JKsY8g"
 bot = commands.Bot(command_prefix=commands.when_mentioned_or("&"),
                    description='This is Botくん2号.')
@@ -55,6 +55,7 @@ Botくん1号 Commands
         '瞳の色': 'eye_color',
         '体型': 'body',
         '性格': 'personality',
+        '職業': 'job',
         '口癖': 'catch_phrase',
         '好きなもの': 'favorite',
         '嫌いなもの': 'dislike',
