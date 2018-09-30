@@ -6,11 +6,14 @@ import bot2
 
 loop = asyncio.get_event_loop()
 # botくん1号の起動
-job = Thread(target=asyncio.run_coroutine_threadsafe, args=(bot1.bot.start(bot1.token, Bot=True), loop))
-job.start()
+print("Start bot1.")
+job1 = Thread(target=asyncio.run_coroutine_threadsafe, args=(bot1.bot.start(bot1.token, Bot=True), loop))
 
 # botくん2号の起動
-job = Thread(target=asyncio.run_coroutine_threadsafe, args=(bot2.bot.start(bot2.token, Bot=True), loop))
-job.start()
+print("Start bot2.")
+job2 = Thread(target=asyncio.run_coroutine_threadsafe, args=(bot2.bot.start(bot2.token, Bot=True), loop))
+
+job1.start()
+job2.start()
 
 loop.run_forever()
