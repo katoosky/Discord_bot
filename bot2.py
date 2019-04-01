@@ -355,7 +355,7 @@ def check_timer_table():
         with conn.cursor() as cur:
             cur.execute("SELECT * FROM pg_tables where tablename=%s", (timer_table,))
             if cur.fetchone() is None:
-                cur.execute("create table %s () \
+                cur.execute("create table %s ( \
                     user_id bigint, tomato integer default 0, state smallint default 0, \
                     updated_at timestamp default current_timestamp, created_at timestamp default current_timestamp)"
                     , (timer_table,))
