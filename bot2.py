@@ -355,17 +355,16 @@ def check_timer_table():
         with conn.cursor() as cur:
             cur.execute("SELECT * FROM pg_tables where tablename=%s", (timer_table,))
             if cur.fetchone() is None:
-                cur.execute("create table %s ( \
-                    user_id bigint, tomato integer default 0, state smallint default 0, \
-                    updated_at timestamp default current_timestamp, created_at timestamp default current_timestamp)"
-                    , (timer_table,))
+                cur.execute(f"""create table {timer_table} ( 
+                    user_id bigint, tomato integer default 0, state smallint default 0, 
+                    updated_at timestamp default current_timestamp, created_at timestamp default current_timestamp)""")
                 conn.commit()
 
 def get_timer_record(user_id):
     with psycopg2.connect(dsn) as conn:
         with conn.cursor() as cur:
             # テーブルが存在するかチェック
-            cur.execute(f"SELECT * FROM %s WHERE user_id = %s", (timer_table, user_id))
+            cur.execute(f"SELECT * FROM {timer_table} WHERE user_id = %s", (user_id,))
             return cur.fetchone()
 
 # 冗長だけど頻度は高くない想定なのでこのまま
@@ -373,14 +372,14 @@ def set_timer_record(user_id, state):
     with psycopg2.connect(dsn) as conn:
         with conn.cursor() as cur:
             # ユーザが存在するかチェック
-            cur.execute(f"SELECT * FROM %s WHERE user_id = %s", (timer_table, user_id))
+            cur.execute(f"SELECT * FROM {timer_table} WHERE user_id = %s", (user_id,))
             if cur.fetchone() is None:
-                cur.execute("INSERT INTO %s (user_id) VALUES (%s)", (timer_table, user_id))
+                cur.execute(f"INSERT INTO {timer_table} (user_id) VALUES (%s)", (user_id,))
                 conn.commit()
             # レコードが存在するかチェックして追加
-            cur.execute("""UPDATE %(table)s SET state=%(state)s, 
+            cur.execute(f"""UPDATE {timer_table} SET state=%(state)s, 
                 updated_at=current_timestamp, WHERE user_id=%(user_id)s""",
-                 {"table": timer_table, "user_id": user_id, "state": state})
+                 {"user_id": user_id, "state": state})
             conn.commit()
 
 def add_tomato(user_id):
@@ -394,9 +393,9 @@ def add_tomato(user_id):
     # DBの記録に加算
     with psycopg2.connect(dsn) as conn:
         with conn.cursor() as cur:
-            cur.execute("UPDATE %(table)s SET tomato= tomato + %(amount)s, \
-                updated_at=current_timestamp, WHERE user_id=%(user_id)s",
-                {"table": timer_table, "user_id": user_id, "amount": 1})
+            cur.execute(f"""UPDATE {timer_table} SET tomato= tomato + %(amount)s, 
+                updated_at=current_timestamp, WHERE user_id=%(user_id)s""",
+                {"user_id": user_id, "amount": 1})
             conn.commit()
 
 def get_tomato(user_id):
