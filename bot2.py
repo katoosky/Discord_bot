@@ -387,7 +387,7 @@ def add_tomato(user_id):
     # 当日分の記録用のキャッシュを加算
     r = redis.from_url(os.environ.get("REDIS_URL"))
     r.incr(user_id)
-    now = datetime.now(tz=jst)
+    now = datetime.now().replace(tzinfo=jst)
     base_time = now.replace(minute=0, second=0, microsecond=0)
     r.expireat(user_id, base_time+timedelta(days=1))
 
@@ -468,7 +468,7 @@ def calc_timedelta(td):
     return 0, td.seconds
 
 async def remaining(message):
-    now = datetime.now(tz=jst)
+    now = datetime.now().replace(tzinfo=jst)
     record = get_timer_record(message.author.id)
     if record is None or record.get('state') == STATE_NONE:
         await message.channel.send(f'{message.author.mention} タイマーは動いてないよ')
