@@ -1,5 +1,5 @@
 import asyncio
-from datetime import date, datetime
+from datetime import date, datetime、timedelta
 import os
 import random
 
@@ -404,7 +404,7 @@ def get_tomato(user_id):
     today_tomato = r.get(user_id)
     today_tomato = today_tomato if today_tomato is not None else 0
     tomato = get_timer_record(user_id)
-    tomato = tomato if tomato is not None else 0
+    tomato = tomato['tomato'] if tomato is not None else 0
     return tomato, today_tomato
 
 async def sprint(message):
