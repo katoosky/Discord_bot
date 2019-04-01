@@ -16,7 +16,7 @@ bot = commands.Bot(command_prefix=commands.when_mentioned_or("&"),
                    description='This is Botくん2号.')
 bot.remove_command('help')
 
-dns = os.environ['DATABASE_URL']
+dsn = os.environ['DATABASE_URL']
 # dsn = "postgres://discord:password@postgres:5432/discord"
 
 jst = timezone('Asia/Tokyo')
