@@ -1,21 +1,25 @@
-from datetime import date
+import asyncio
+from datetime import date, datetime
+import os
 import random
 
 import discord
 from discord.ext import commands
 import psycopg2
 from psycopg2.extras import DictCursor
+from pytz import timezone
 
 # 変数
-version="1.2.2"
-token = "NDkzOTI2MDI4NjIwODU3MzY0.DosFJA.1Hzepp-iPyU-MFk__HZ9-JKsY8g"
+version="1.3.0"
+token = os.environ['BOT2_TOKEN']
 bot = commands.Bot(command_prefix=commands.when_mentioned_or("&"),
                    description='This is Botくん2号.')
 bot.remove_command('help')
 
-dsn = "postgres://owdrwmlniladba:f2b7dfd2b785fc2d84bdd2dddd5bfbb458dfca2c22f72eab13a0b0be71d3b0f6@ec2-107-21-98-165.compute-1.amazonaws.com:5432/de885umnk3t5cr"
+dns = os.environ['DATABASE_URL']
 # dsn = "postgres://discord:password@postgres:5432/discord"
 
+jst = timezone('Asia/Tokyo')
 
 class ThemeBot:
     help_text = """
@@ -340,20 +344,149 @@ async def mention_drawing(message, commands):
         if commands[1] == key:
             await manage_table(theme_bot, message, commands, table)
 
+# ポモドーロタイマー
+timer_table = 'pomodoro_timer'
+STATE_NONE = 0
+STATE_SPRINT = 1
+STATE_REST = 2
+
+def check_timer_table():
+    with psycopg2.connect(dsn) as conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT * FROM pg_tables where tablename=%s", (timer_table,))
+            if cur.fetchone() is None:
+                cur.execute("""create table %s (
+                    user_id bigint, tomato integer default 0, state smallint default 0, 
+                    updated_at timestamp default current_timestamp, created_at timestamp default current_timestamp)"""
+                    , (timer_table,))
+                conn.commit()
+
+def get_timer_record(user_id):
+    with psycopg2.connect(dsn) as conn:
+        with conn.cursor() as cur:
+            # テーブルが存在するかチェック
+            cur.execute(f"SELECT * FROM %s WHERE user_id = %s", (timer_table, user_id))
+            return cur.fetchone()
+
+# 冗長だけど頻度は高くない想定なのでこのまま
+def set_timer_record(user_id, state):
+    with psycopg2.connect(dsn) as conn:
+        with conn.cursor() as cur:
+            # ユーザが存在するかチェック
+            cur.execute(f"SELECT * FROM %s WHERE user_id = %s", (timer_table, user_id))
+            if cur.fetchone() is None:
+                cur.execute("INSERT INTO %s (user_id) VALUES (%s)", (timer_table, user_id))
+                conn.commit()
+            # レコードが存在するかチェックして追加
+            cur.execute("""UPDATE %(table)s SET state=%(state)s, 
+                updated_at=current_timestamp, WHERE user_id=%(user_id)s""",
+                 {"table": timer_table, "user_id": user_id, "state": state})
+            conn.commit()
+
+def add_tomato(user_id):
+    # 当日分の記録用のキャッシュを加算
+    r = redis.from_url(os.environ.get("REDIS_URL"))
+    r.incr(user_id)
+    now = datetime.now(tz=jst)
+    base_time = now.replace(minute=0, second=0, microsecond=0)
+    r.expireat(user_id, base_time+timedelta(days=1))
+
+    # DBの記録に加算
+    with psycopg2.connect(dsn) as conn:
+        with conn.cursor() as cur:
+            cur.execute("""UPDATE %(table)s SET tomato= tomato + %(amount)s, 
+                updated_at=current_timestamp, WHERE user_id=%(user_id)s""",
+                {"table": timer_table, "user_id": user_id, "amount": 1})
+            conn.commit()
+
+def get_tomato(user_id):
+    r = redis.from_url(os.environ.get("REDIS_URL"))
+    today_tomato = r.get(user_id)
+    today_tomato = today_tomato if today_tomato is not None else 0
+    tomato = get_timer_record(message.author.id)['tomato']
+    return tomato, today_tomato
+
+async def sprint(message):
+    # スプリント開始処理
+    set_timer_record(message.author.id, STATE_SPRINT)
+    tomato, today_tomato = get_tomato(message.author.id)
+    description = "25分集中して作業を頑張ろう！"
+    embed = discord.Embed(title="ポモドーロタイマー", description=description, color=0xf31105)
+    embed.add_field(name="今日のトマト", value=today_tomato)
+    embed.add_field(name="これまでのトマト", value=tomato)
+    await message.channel.send(f'{message.author.mention}', embed=embed)
+
+    # ウェイト
+    await asyncio.sleep(10)
+    
+    # スプリント終了処理
+    if get_timer_record(message.author.id)['state'] == STATE_SPRINT:
+        add_tomato(message.author.id)
+        set_timer_record(message.author.id, STATE_NONE)
+        tomato, today_tomato = get_tomato(message.author.id)
+        description = "25分経ったよ！お疲れさま\nトマトはこれだけたまったよ！"
+        embed = discord.Embed(title="ポモドーロタイマー", description=description, color=0xf31105)
+        embed.add_field(name="今日のトマト", value=today_tomato)
+        embed.add_field(name="これまでのトマト", value=tomato)
+        await message.channel.send(f'{message.author.mention}', embed=embed)
+
+async def rest(message):
+    if get_timer_record(message.author.id).get('state', 0) == STATE_SPRINT:
+        await message.channel.send(f'{message.author.mention} タイマーを中止するね......')
+    set_timer_record(message.author.id, STATE_REST)
+    await message.channel.send(f'{message.author.mention} 今から5分間休憩だよ！ゆっくり休んでリフレッシュ！')
+
+    await asyncio.sleep(10)
+
+    if get_timer_record(message.author.id).get('state', 0) == STATE_REST:
+        set_timer_record(message.author.id, STATE_NONE)
+        await message.channel.send(f'{message.author.mention} 休憩終了だよ！次も頑張ろう！')
+
+async def rest(message):
+    if get_timer_record(message.author.id).get('state', 0) in (STATE_SPRINT, STATE_REST):
+        set_timer_record(message.author.id, STATE_NONE)
+        await message.channel.send(f'{message.author.mention} タイマーを中止するね......')
+    elif:
+        await message.channel.send(f'{message.author.mention} タイマーは動いてないよ？')
+
+async def tomato(message):
+    tomato, today_tomato = get_tomato(message.author.id)
+    description = "あなたのトマトはこのくらいたまってるよ！"
+    embed = discord.Embed(title="ポモドーロタイマー", description=description, color=0xf31105)
+    embed.add_field(name="今日のトマト", value=today_tomato)
+    embed.add_field(name="これまでのトマト", value=tomato)
+    await message.channel.send(f'{message.author.mention}', embed=embed)
+
+# DBの処理周りが冗長だけど、使用頻度は高くない想定なのでこのまま
+async def mention_timer(message, commands):
+    check_timer_table()
+
+    if len(commands) == 1:
+        await splint(message)
+    else:
+        if commands[1] == "休憩":
+            await rest(message)
+        elif commands[1] == "中止":
+            await stop(message)
+        elif commands[1] == "トマト":
+            await tomato(message)
 
 @bot.event # イベントを受信するための構文（デコレータ）
 async def on_message(message):
     ctx = await bot.get_context(message)
+    # コマンドだったらコマンドの処理
     if ctx.command is not None:
         await bot.process_commands(message)
     if not 0 < len([ member for member in message.mentions if member.id == bot.user.id]):
         return
 
+    # メンションだけだったら返事を返す
     arg = message.content.split()
     if len(arg) == 1:
         await message.channel.send(f'やあ{message.author.mention}さん！元気かい？\nヘルプを見る場合は*「@Botくん2号 ヘルプ」*って書き込んでね！\n**コマンドを使用するときは一時チャットかDMを使いましょう！**')
         return
 
+    # メンションでのコマンド実行だったらメンション用の関数を呼び出す
     commands = arg[1:]
     if commands[0] == "ヘルプ":
         await message.channel.send(embed=help_mention())
@@ -361,6 +494,8 @@ async def on_message(message):
         await mention_three_topics(message, commands)
     elif commands[0] == "お絵かき" or commands[0] == "お絵描き":
         await mention_drawing(message, commands)
+    elif commands[0] == "タイマー":
+        await mention_timer(message, commands)
 
 
 bot.add_cog(ThemeBot(bot))

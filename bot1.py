@@ -1,10 +1,12 @@
+import os
+
 import discord
 from discord.ext import commands
 
 
 # 変数
-version="1.0.4"
-token = "NDcyNTM5NzczMzI4ODE4MTc2.Dm0hmA.b4vSarQxZBcbp6rEJ545QsQyeu4"
+version="1.0.5"
+token = os.environ['BOT1_TOKEN']
 bot = commands.Bot(command_prefix=commands.when_mentioned_or("!"),
                    description='This is Botくん1号 for managing guild "KIDDING KID".')
 bot.remove_command('help')
