@@ -379,7 +379,7 @@ def set_timer_record(user_id, state):
                 conn.commit()
             # レコードが存在するかチェックして追加
             cur.execute(f"""UPDATE {timer_table} SET state=%(state)s, 
-                updated_at=current_timestamp, WHERE user_id=%(user_id)s""",
+                updated_at=current_timestamp WHERE user_id=%(user_id)s""",
                  {"user_id": user_id, "state": state})
             conn.commit()
 
@@ -395,7 +395,7 @@ def add_tomato(user_id):
     with psycopg2.connect(dsn) as conn:
         with conn.cursor() as cur:
             cur.execute(f"""UPDATE {timer_table} SET tomato= tomato + %(amount)s, 
-                updated_at=current_timestamp, WHERE user_id=%(user_id)s""",
+                updated_at=current_timestamp WHERE user_id=%(user_id)s""",
                 {"user_id": user_id, "amount": 1})
             conn.commit()
 
