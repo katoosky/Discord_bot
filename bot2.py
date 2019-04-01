@@ -418,8 +418,8 @@ async def sprint(message):
     await message.channel.send(f'{message.author.mention}', embed=embed)
 
     # ウェイト
-    # await asyncio.sleep(60 * 25)
-    await asyncio.sleep(10)
+    await asyncio.sleep(60 * 25)
+    # await asyncio.sleep(10)
     
     # スプリント終了処理
     if get_timer_record(message.author.id)['state'] == STATE_SPRINT:
@@ -439,8 +439,8 @@ async def rest(message):
     set_timer_record(message.author.id, STATE_REST)
     await message.channel.send(f'{message.author.mention} 今から5分間休憩だよ！ゆっくり休んでリフレッシュ！')
 
-    # await asyncio.sleep(60 * 5)
-    await asyncio.sleep(10)
+    await asyncio.sleep(60 * 5)
+    # await asyncio.sleep(10)
 
     if get_timer_record(message.author.id).get('state', 0) == STATE_REST:
         set_timer_record(message.author.id, STATE_NONE)
