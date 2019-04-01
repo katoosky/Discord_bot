@@ -363,7 +363,7 @@ def check_timer_table():
 
 def get_timer_record(user_id):
     with psycopg2.connect(dsn) as conn:
-        with conn.cursor() as cur:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
             # テーブルが存在するかチェック
             cur.execute(f"SELECT * FROM {timer_table} WHERE user_id = %s", (user_id,))
             return cur.fetchone()
