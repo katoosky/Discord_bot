@@ -473,11 +473,13 @@ async def remaining(message):
     if record is None or record.get('state') == STATE_NONE:
         await message.channel.send(f'{message.author.mention} タイマーは動いてないよ')
     elif record.get('state') == STATE_SPRINT:
-        remaining_time = record.get('updated_at').replace(tzinfo=jst)+timedelta(minutes=25) - now
+        remaining_time = record.get('updated_at').replace(tzinfo=jst) - now + timedelta(minutes=25)
         minute, second = calc_timedelta(remaining_time)
-        await message.channel.send(f'{message.author.mention} タイマーは残り{minute}分{second}だよ')
+        embed.add_field(name="今日のトマト", value=record.get('updated_at').replace(tzinfo=jst))
+        embed.add_field(name="これまでのトマト", value=now)
+        await message.channel.send(f'{message.author.mention} タイマーは残り{minute}分{second}だよ', embed=embed)
     elif record.get('state') == STATE_REST:
-        remaining_time = record.get('updated_at').replace(tzinfo=jst)+timedelta(minutes=5) - now
+        remaining_time = record.get('updated_at').replace(tzinfo=jst) - now + timedelta(minutes=5)
         minute, second = calc_timedelta(remaining_time)
         await message.channel.send(f'{message.author.mention} 休憩時間は残り{minute}分{second}だよ')
 
