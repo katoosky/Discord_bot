@@ -387,7 +387,7 @@ def add_tomato(user_id):
     # 当日分の記録用のキャッシュを加算
     r = redis.from_url(os.environ.get("REDIS_URL"))
     r.incr(user_id)
-    now = datetime.now().replace(tzinfo=jst)
+    now = datetime.now()
     base_time = now.replace(minute=0, second=0, microsecond=0)
     r.expireat(user_id, base_time+timedelta(days=1))
 
@@ -468,21 +468,21 @@ def calc_timedelta(td):
     return 0, td.seconds
 
 async def remaining(message):
-    now = datetime.now().replace(tzinfo=jst)
+    now = datetime.now()
     record = get_timer_record(message.author.id)
     if record is None or record.get('state') == STATE_NONE:
         await message.channel.send(f'{message.author.mention} タイマーは動いてないよ')
     elif record.get('state') == STATE_SPRINT:
-        remaining_time = record.get('updated_at').replace(tzinfo=jst) - now + timedelta(minutes=25)
+        remaining_time = record.get('updated_at') - now + timedelta(minutes=25)
         minute, second = calc_timedelta(remaining_time)
         description = "あなたのトマトはこのくらいたまってるよ！"
         embed = discord.Embed(title="ポモドーロタイマー", description=description, color=0xf31105)
-        embed.add_field(name="updated_at", value=record.get('updated_at').replace(tzinfo=jst))
+        embed.add_field(name="updated_at", value=record.get('updated_at'))
         embed.add_field(name="now", value=now)
         embed.add_field(name="remaining_time", value=remaining_time)
         await message.channel.send(f'{message.author.mention} タイマーは残り{minute}分{second}だよ', embed=embed)
     elif record.get('state') == STATE_REST:
-        remaining_time = record.get('updated_at').replace(tzinfo=jst) - now + timedelta(minutes=5)
+        remaining_time = record.get('updated_at') - now + timedelta(minutes=5)
         minute, second = calc_timedelta(remaining_time)
         await message.channel.send(f'{message.author.mention} 休憩時間は残り{minute}分{second}だよ')
 
