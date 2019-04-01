@@ -355,9 +355,9 @@ def check_timer_table():
         with conn.cursor() as cur:
             cur.execute("SELECT * FROM pg_tables where tablename=%s", (timer_table,))
             if cur.fetchone() is None:
-                cur.execute("""create table %s (
-                    user_id bigint, tomato integer default 0, state smallint default 0, 
-                    updated_at timestamp default current_timestamp, created_at timestamp default current_timestamp)"""
+                cur.execute("create table %s () \
+                    user_id bigint, tomato integer default 0, state smallint default 0, \
+                    updated_at timestamp default current_timestamp, created_at timestamp default current_timestamp)"
                     , (timer_table,))
                 conn.commit()
 
@@ -394,8 +394,8 @@ def add_tomato(user_id):
     # DBの記録に加算
     with psycopg2.connect(dsn) as conn:
         with conn.cursor() as cur:
-            cur.execute("""UPDATE %(table)s SET tomato= tomato + %(amount)s, 
-                updated_at=current_timestamp, WHERE user_id=%(user_id)s""",
+            cur.execute("UPDATE %(table)s SET tomato= tomato + %(amount)s, \
+                updated_at=current_timestamp, WHERE user_id=%(user_id)s",
                 {"table": timer_table, "user_id": user_id, "amount": 1})
             conn.commit()
 
