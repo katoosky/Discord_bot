@@ -309,6 +309,37 @@ async def manage_table(bot, message, commands, table):
     elif commands[2] == "削除":
         await message.channel.send(bot.del_record(table, commands[3:]))
 
+# サブコマンド内容
+async def mention_three_topics(message, commands):
+    theme_bot = ThemeBot(bot)
+    if commands[1] == "お題":
+        message.content = f'three_topics {message.author.name}'
+        await message.channel.send(f'{message.author.mention}', embed=theme_bot.get_three_topics(message))
+    elif commands[1] == "ヘルプ":
+        embed = discord.Embed(title="コマンドの使い方、三題噺編！", description='三題噺のお題に関するコマンドの使い方について説明するよ！', color=0x74e6bc)
+        add_help_three_topics(embed)
+        await message.channel.send(embed=embed)
+    for key, table in theme_bot.three_topics_table.items():
+        if commands[1] == key:
+            await manage_table(theme_bot, message, commands, table)
+
+async def mention_drawing(message, commands):
+    theme_bot = ThemeBot(bot)
+    if commands[1] == "お題":
+        message.content = f'drawing {message.author.name}'
+        await message.channel.send(f'{message.author.mention}', embed=theme_bot.get_drawing(message))
+    elif commands[1] == "ヘルプ":
+        embed = discord.Embed(title="コマンドの使い方、お絵かき編！", description='お絵かきのお題に関するコマンドの使い方について説明するよ！', color=0x74e6bc)
+        add_help_drawing(embed)
+        await message.channel.send(embed=embed)
+    elif commands[1] == "設定項目":
+        embed = discord.Embed(title="コマンドの使い方、お絵かきの設定項目", description='お絵かきの設定項目はこちら！', color=0x74e6bc)
+        add_help_tables(embed)
+        await message.channel.send(embed=embed)
+    for key, table in theme_bot.drawing_table.items():
+        if commands[1] == key:
+            await manage_table(theme_bot, message, commands, table)
+
 
 @bot.event # イベントを受信するための構文（デコレータ）
 async def on_message(message):
@@ -323,36 +354,13 @@ async def on_message(message):
         await message.channel.send(f'やあ{message.author.mention}さん！元気かい？\nヘルプを見る場合は*「@Botくん2号 ヘルプ」*って書き込んでね！\n**コマンドを使用するときは一時チャットかDMを使いましょう！**')
         return
 
-    theme_bot = ThemeBot(bot)
     commands = arg[1:]
     if commands[0] == "ヘルプ":
         await message.channel.send(embed=help_mention())
     elif commands[0] == "三題噺":
-        if commands[1] == "お題":
-            message.content = f'three_topics {message.author.name}'
-            await message.channel.send(f'{message.author.mention}', embed=theme_bot.get_three_topics(message))
-        elif commands[1] == "ヘルプ":
-            embed = discord.Embed(title="コマンドの使い方、三題噺編！", description='三題噺のお題に関するコマンドの使い方について説明するよ！', color=0x74e6bc)
-            add_help_three_topics(embed)
-            await message.channel.send(embed=embed)
-        for key, table in theme_bot.three_topics_table.items():
-            if commands[1] == key:
-                await manage_table(theme_bot, message, commands, table)
+        await mention_three_topics(message, commands)
     elif commands[0] == "お絵かき" or commands[0] == "お絵描き":
-        if commands[1] == "お題":
-            message.content = f'drawing {message.author.name}'
-            await message.channel.send(f'{message.author.mention}', embed=theme_bot.get_drawing(message))
-        elif commands[1] == "ヘルプ":
-            embed = discord.Embed(title="コマンドの使い方、お絵かき編！", description='お絵かきのお題に関するコマンドの使い方について説明するよ！', color=0x74e6bc)
-            add_help_drawing(embed)
-            await message.channel.send(embed=embed)
-        elif commands[1] == "設定項目":
-            embed = discord.Embed(title="コマンドの使い方、お絵かきの設定項目", description='お絵かきの設定項目はこちら！', color=0x74e6bc)
-            add_help_tables(embed)
-            await message.channel.send(embed=embed)
-        for key, table in theme_bot.drawing_table.items():
-            if commands[1] == key:
-                await manage_table(theme_bot, message, commands, table)
+        await mention_drawing(message, commands)
 
 
 bot.add_cog(ThemeBot(bot))
