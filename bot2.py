@@ -446,7 +446,7 @@ async def rest(message):
     if get_timer_record(message.author.id).get('state', 0) in (STATE_SPRINT, STATE_REST):
         set_timer_record(message.author.id, STATE_NONE)
         await message.channel.send(f'{message.author.mention} タイマーを中止するね......')
-    elif:
+    else:
         await message.channel.send(f'{message.author.mention} タイマーは動いてないよ？')
 
 async def tomato(message):
