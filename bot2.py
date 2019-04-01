@@ -402,7 +402,7 @@ def add_tomato(user_id):
 def get_tomato(user_id):
     r = redis.from_url(os.environ.get("REDIS_URL"))
     today_tomato = r.get(user_id)
-    today_tomato = today_tomato if today_tomato is not None else 0
+    today_tomato = int(today_tomato) if today_tomato is not None else 0
     tomato = get_timer_record(user_id)
     tomato = tomato['tomato'] if tomato is not None else 0
     return tomato, today_tomato
@@ -418,7 +418,7 @@ async def sprint(message):
     await message.channel.send(f'{message.author.mention}', embed=embed)
 
     # ウェイト
-    await asyncio.sleep(10)
+    await asyncio.sleep(60 * 25)
     
     # スプリント終了処理
     if get_timer_record(message.author.id)['state'] == STATE_SPRINT:
@@ -438,7 +438,7 @@ async def rest(message):
     set_timer_record(message.author.id, STATE_REST)
     await message.channel.send(f'{message.author.mention} 今から5分間休憩だよ！ゆっくり休んでリフレッシュ！')
 
-    await asyncio.sleep(10)
+    await asyncio.sleep(60 * 5)
 
     if get_timer_record(message.author.id).get('state', 0) == STATE_REST:
         set_timer_record(message.author.id, STATE_NONE)
