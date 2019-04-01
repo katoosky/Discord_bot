@@ -8,6 +8,7 @@ from discord.ext import commands
 import psycopg2
 from psycopg2.extras import DictCursor
 from pytz import timezone
+import redis
 
 # 変数
 version="1.3.0"
