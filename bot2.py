@@ -11,7 +11,7 @@ from pytz import timezone
 import redis
 
 # 変数
-version="1.3.0"
+version="1.3.1"
 token = os.environ['BOT2_TOKEN']
 bot = commands.Bot(command_prefix=commands.when_mentioned_or("&"),
                    description='This is Botくん2号.')
@@ -434,7 +434,7 @@ async def sprint(message):
 
 async def rest(message):
     record = get_timer_record(message.author.id)
-    if  record is not None and get_timer_record(message.author.id).get('state', 0) == STATE_SPRINT:
+    if  record is not None and record.get('state', 0) == STATE_SPRINT:
         await message.channel.send(f'{message.author.mention} タイマーを中止するね......')
     set_timer_record(message.author.id, STATE_REST)
     await message.channel.send(f'{message.author.mention} 今から5分間休憩だよ！ゆっくり休んでリフレッシュ！')
@@ -462,6 +462,18 @@ async def tomato(message):
     embed.add_field(name="これまでのトマト", value=tomato)
     await message.channel.send(f'{message.author.mention}', embed=embed)
 
+async def remaining(message):
+    now = datetime.now(tz=jst)
+    record = get_timer_record(message.author.id)
+    if record is None or record.get('state') == STATE_NONE:
+        await message.channel.send(f'{message.author.mention} タイマーは動いてないよ')
+    elif record.get('state') == STATE_SPRINT:
+        remaining_time = record.get('updated_at')+timedelta(minutes=25) - now
+        await message.channel.send(f'{message.author.mention} タイマーは残り{remaining_time.minute}分{remaining_time.second}だよ')
+    elif record.get('state') == STATE_REST:
+        remaining_time = record.get('updated_at')+timedelta(minutes=5) - now
+        await message.channel.send(f'{message.author.mention} 休憩時間は残り{remaining_time.minute}分{remaining_time.second}だよ')
+
 # DBの処理周りが冗長だけど、使用頻度は高くない想定なのでこのまま
 async def mention_timer(message, commands):
     check_timer_table()
@@ -475,6 +487,8 @@ async def mention_timer(message, commands):
             await stop(message)
         elif commands[1] == "トマト":
             await tomato(message)
+        elif commands[1] in  ("残り", "時間", "残り時間"):
+            await remaining(message)
 
 @bot.event # イベントを受信するための構文（デコレータ）
 async def on_message(message):
