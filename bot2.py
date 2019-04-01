@@ -463,7 +463,7 @@ async def mention_timer(message, commands):
     check_timer_table()
 
     if len(commands) == 1:
-        await splint(message)
+        await sprint(message)
     else:
         if commands[1] == "休憩":
             await rest(message)
