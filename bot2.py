@@ -432,7 +432,8 @@ async def sprint(message):
         await message.channel.send(f'{message.author.mention}', embed=embed)
 
 async def rest(message):
-    if get_timer_record(message.author.id).get('state', 0) == STATE_SPRINT:
+    record = get_timer_record(message.author.id)
+    if  record is not None and get_timer_record(message.author.id).get('state', 0) == STATE_SPRINT:
         await message.channel.send(f'{message.author.mention} タイマーを中止するね......')
     set_timer_record(message.author.id, STATE_REST)
     await message.channel.send(f'{message.author.mention} 今から5分間休憩だよ！ゆっくり休んでリフレッシュ！')
@@ -444,7 +445,8 @@ async def rest(message):
         await message.channel.send(f'{message.author.mention} 休憩終了だよ！次も頑張ろう！')
 
 async def stop(message):
-    if get_timer_record(message.author.id).get('state', 0) in (STATE_SPRINT, STATE_REST):
+    record = get_timer_record(message.author.id)
+    if record is not None and record.get('state', 0) in (STATE_SPRINT, STATE_REST):
         set_timer_record(message.author.id, STATE_NONE)
         await message.channel.send(f'{message.author.mention} タイマーを中止するね......')
     else:
