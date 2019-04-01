@@ -403,7 +403,7 @@ def get_tomato(user_id):
     r = redis.from_url(os.environ.get("REDIS_URL"))
     today_tomato = r.get(user_id)
     today_tomato = today_tomato if today_tomato is not None else 0
-    tomato = get_timer_record(user_id)['tomato']
+    tomato = get_timer_record(user_id).get('tomato', 0)
     return tomato, today_tomato
 
 async def sprint(message):
