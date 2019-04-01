@@ -468,10 +468,10 @@ async def remaining(message):
     if record is None or record.get('state') == STATE_NONE:
         await message.channel.send(f'{message.author.mention} タイマーは動いてないよ')
     elif record.get('state') == STATE_SPRINT:
-        remaining_time = record.get('updated_at')+timedelta(minutes=25) - now
+        remaining_time = record.get('updated_at').replace(tzinfo=jst)+timedelta(minutes=25) - now
         await message.channel.send(f'{message.author.mention} タイマーは残り{remaining_time.minute}分{remaining_time.second}だよ')
     elif record.get('state') == STATE_REST:
-        remaining_time = record.get('updated_at')+timedelta(minutes=5) - now
+        remaining_time = record.get('updated_at').replace(tzinfo=jst)+timedelta(minutes=5) - now
         await message.channel.send(f'{message.author.mention} 休憩時間は残り{remaining_time.minute}分{remaining_time.second}だよ')
 
 # DBの処理周りが冗長だけど、使用頻度は高くない想定なのでこのまま
