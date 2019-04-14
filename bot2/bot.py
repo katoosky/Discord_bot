@@ -74,10 +74,6 @@ class Bot2(commands.Bot):
 
 
 
-bot = Bot1()
-bot.run(Bot1.TOKEN)
+bot = Bot2()
+bot.run(Bot2.TOKEN)
 
-
-
-bot.add_cog(ThemeBot(bot))
-# bot.run(token)
