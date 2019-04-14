@@ -23,6 +23,16 @@ class Quote(commands.Cog):
             embed.set_footer(text="via discordbot")
             await message.channel.send(embed=embed)
 
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if message.content.startswith("https://discordapp.com/channels/"):
+            print("quote message.")
+            quote = self.bot.get_cog('Quote')
+            if quote is not None:
+                messages = message.content.split('/')
+                print(messages)
+                await quote.quote_message(message, *messages[4:])
+
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):
     bot.add_cog(Quote(bot))

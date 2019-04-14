@@ -55,16 +55,6 @@ class Bot2(commands.Bot):
             return
         await self.process_commands(message)
 
-        # Quote用
-        if message.content.startswith("https://discordapp.com/channels/"):
-            print("quote message.")
-            quote = self.get_cog('Quote')
-            if quote is not None:
-                messages = message.content.split('/')
-                print(messages)
-                await quote.quote_message(message, *messages[4:])
-
-
 
 bot = Bot2()
 # bot.run(Bot2.TOKEN)
