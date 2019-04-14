@@ -17,6 +17,7 @@ dsn = os.environ['DATABASE_URL']
 # dsn = "postgres://discord:password@postgres:5432/discord"
 jst = timezone('Asia/Tokyo')
 
+version="2.0.0"
 
 class Theme(commands.Cog):
     three_topics_table = {
