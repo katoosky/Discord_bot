@@ -12,7 +12,7 @@ version="2.0.0"
 class Bot1(commands.Bot):
     TOKEN = os.environ['DISCORD_BOT_TOKEN_1']
     INITIAL_COGS = [
-        'cogs.guild_controller',
+        'bot1.cogs.guild_controller',
     ]
 
     # MyBotのコンストラクタ。

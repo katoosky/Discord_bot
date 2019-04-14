@@ -19,9 +19,9 @@ version="2.0.0"
 class Bot2(commands.Bot):
     TOKEN = os.environ['DISCORD_BOT_TOKEN_2']
     INITIAL_COGS = [
-        'cogs.quote',
-        'cogs.theme',
-        'cogs.timer'
+        'bot2.cogs.quote',
+        'bot2.cogs.theme',
+        'bot2.cogs.timer'
     ]
 
     # MyBotのコンストラクタ。
