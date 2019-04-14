@@ -169,16 +169,16 @@ class Timer(commands.Cog):
         commands = arg[1:]
 
         if len(commands) == 1:
-            await self.sprint(message)
+            await self.sprint(ctx.message)
         else:
             if commands[1] == "休憩":
-                await self.rest(message)
+                await self.rest(ctx.message)
             elif commands[1] == "中止":
-                await self.stop(message)
+                await self.stop(ctx.message)
             elif commands[1] == "トマト":
-                await self.tomato(message)
+                await self.tomato(ctx.message)
             elif commands[1] in  ("残り", "時間", "残り時間"):
-                await self.remaining(message)
+                await self.remaining(ctx.message)
             
 
 # Bot本体側からコグを読み込む際に呼び出される関数。
