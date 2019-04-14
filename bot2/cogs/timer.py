@@ -160,7 +160,7 @@ class Timer(commands.Cog):
             await message.channel.send(f'{message.author.mention} 休憩時間は残り{minute}分{second}だよ')
 
     # DBの処理周りが冗長だけど、使用頻度は高くない想定なのでこのまま
-    @commands.group(name="タイマー")
+    @commands.command(name="タイマー")
     async def mention_timer(ctx):
         check_timer_table()
 
