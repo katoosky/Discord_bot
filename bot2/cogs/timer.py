@@ -121,7 +121,7 @@ class Timer(commands.Cog):
         await asyncio.sleep(10)
 
         if self.get_timer_record(message.author.id).get('state', 0) == self.__class__.STATE_REST:
-            self.set_timer_record(message.author.id, self.__class__.TATE_NONE)
+            self.set_timer_record(message.author.id, self.__class__.STATE_NONE)
             await message.channel.send(f'{message.author.mention} 休憩終了だよ！次も頑張ろう！')
 
     async def stop(self, message):
@@ -148,13 +148,13 @@ class Timer(commands.Cog):
     async def remaining(self, message):
         now = datetime.now(tz=jst).replace(tzinfo=jst)
         record = self.get_timer_record(message.author.id)
-        if record is None or record.get('state') == STATE_NONE:
+        if record is None or record.get('state') == self.__class__.STATE_NONE:
             await message.channel.send(f'{message.author.mention} タイマーは動いてないよ')
-        elif record.get('state') == STATE_SPRINT:
+        elif record.get('state') == self.__class__.STATE_SPRINT:
             remaining_time = record.get('updated_at').replace(tzinfo=jst) - now + timedelta(minutes=25)
             minute, second = self.calc_timedelta(remaining_time)
             await message.channel.send(f'{message.author.mention} タイマーは残り{minute}分{second}だよ')
-        elif record.get('state') == STATE_REST:
+        elif record.get('state') == self.__class__.STATE_REST:
             remaining_time = record.get('updated_at').replace(tzinfo=jst) - now + timedelta(minutes=5)
             minute, second = self.calc_timedelta(remaining_time)
             await message.channel.send(f'{message.author.mention} 休憩時間は残り{minute}分{second}だよ')
