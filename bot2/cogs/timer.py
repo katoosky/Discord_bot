@@ -162,7 +162,7 @@ class Timer(commands.Cog):
     # DBの処理周りが冗長だけど、使用頻度は高くない想定なのでこのまま
     @commands.command(name="タイマー")
     async def mention_timer(self, ctx):
-        check_timer_table()
+        self.check_timer_table()
 
         # コマンドの分解する
         arg = ctx.message.content.split()
