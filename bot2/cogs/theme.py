@@ -70,8 +70,8 @@ class Theme(commands.Cog):
         user = command[1] if 1 < len(command) else None
         if user is not None:
             random.seed(date.today().strftime('%Y%m%d')+user)
-        genre = random.sample(self.fetchall(self.three_topics_table['ジャンル']), 1)
-        topics = random.sample(self.fetchall(self.three_topics_table['トピック']), 3)
+        genre = random.sample(self.fetchall(self.__class__.three_topics_table['ジャンル']), 1)
+        topics = random.sample(self.fetchall(self.__class__.three_topics_table['トピック']), 3)
 
         title = "今日の{0}さんのお題".format(user) if user is not None else "お題"
         description = "今日の{0}さんのお題はこちら！\n".format(user) if user is not None else ""
@@ -96,7 +96,7 @@ class Theme(commands.Cog):
         embed = discord.Embed(title=title, description=description, color=0x74e6bc)
         
         tables = {}
-        drawing_table = self.drawing_table.copy()
+        drawing_table = self.__class__.drawing_table.copy()
         if (random.randrange(len(drawing_table)) == 0):
             tables['キャラクター'] = drawing_table['キャラクター']
             del drawing_table['種族']
@@ -213,7 +213,7 @@ ID      VALUE
 
     def add_help_tables(self, embed):
         embed.add_field(name="お絵かき 設定項目一覧",
-                        value="、".join(Theme.drawing_table.keys()),
+                        value="、".join(self.__class__.drawing_table.keys()),
                         inline=False)
 
     @commands.command(name="ヘルプ")
@@ -231,18 +231,18 @@ ID      VALUE
         # give info about you here
         embed.add_field(name="Author", value="雅猫")
         # Shows the number of servers the bot is member of.
-        embed.add_field(name="Server count", value=f"{len(bot.guilds)}")
+        embed.add_field(name="Server count", value=f"{len(self.bot.guilds)}")
         # give users a link to invite thsi bot to their server
         embed.add_field(name="Invite", value="https://discordapp.com/api/oauth2/authorize?client_id=493926028620857364&permissions=27712&scope=bot")
         await message.channel.send(embed=embed)
 
     async def manage_table(self, message, commands, table):
         if not 2 < len(commands):
-            await message.channel.send(bot.get_list(table))
+            await message.channel.send(self.get_list(table))
         elif commands[2] == "追加":
-            await message.channel.send(bot.add_record(table, commands[3:]))
+            await message.channel.send(self.add_record(table, commands[3:]))
         elif commands[2] == "削除":
-            await message.channel.send(bot.del_record(table, commands[3:]))
+            await message.channel.send(self.del_record(table, commands[3:]))
 
     # サブコマンド内容
     @commands.command(name="三題噺")
@@ -258,7 +258,7 @@ ID      VALUE
             embed = discord.Embed(title="コマンドの使い方、三題噺編！", description='三題噺のお題に関するコマンドの使い方について説明するよ！', color=0x74e6bc)
             self.add_help_three_topics(embed)
             await message.channel.send(embed=embed)
-        for key, table in self.three_topics_table.items():
+        for key, table in self.__class__.three_topics_table.items():
             if commands[1] == key:
                 await self.manage_table(message, commands, table)
 
@@ -279,7 +279,7 @@ ID      VALUE
             embed = discord.Embed(title="コマンドの使い方、お絵かきの設定項目", description='お絵かきの設定項目はこちら！', color=0x74e6bc)
             self.add_help_tables(embed)
             await message.channel.send(embed=embed)
-        for key, table in self.drawing_table.items():
+        for key, table in self.__class__.drawing_table.items():
             if commands[1] == key:
                 await self.manage_table(message, commands, table)
 
