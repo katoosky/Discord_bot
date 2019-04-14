@@ -75,5 +75,5 @@ class Bot2(commands.Bot):
 
 
 bot = Bot2()
-bot.run(Bot2.TOKEN)
+# bot.run(Bot2.TOKEN)
 

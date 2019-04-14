@@ -48,4 +48,4 @@ class Bot1(commands.Bot):
 
 
 bot = Bot1()
-bot.run(Bot1.TOKEN)
+# bot.run(Bot1.TOKEN)
