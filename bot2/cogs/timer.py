@@ -87,7 +87,7 @@ class Timer(commands.Cog):
 
     async def sprint(self, message):
         # スプリント開始処理
-        self.set_timer_record(message.author.id, STATE_SPRINT)
+        self.set_timer_record(message.author.id, self.__class__.STATE_SPRINT)
         tomato, today_tomato = self.get_tomato(message.author.id)
         description = "25分集中して作業を頑張ろう！"
         embed = discord.Embed(title="ポモドーロタイマー", description=description, color=0xf31105)
