@@ -234,7 +234,7 @@ ID      VALUE
         embed.add_field(name="Server count", value=f"{len(self.bot.guilds)}")
         # give users a link to invite thsi bot to their server
         embed.add_field(name="Invite", value="https://discordapp.com/api/oauth2/authorize?client_id=493926028620857364&permissions=27712&scope=bot")
-        await message.channel.send(embed=embed)
+        await ctx.message.channel.send(embed=embed)
 
     async def manage_table(self, message, commands, table):
         if not 2 < len(commands):
