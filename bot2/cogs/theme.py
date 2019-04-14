@@ -18,7 +18,7 @@ dsn = os.environ['DATABASE_URL']
 jst = timezone('Asia/Tokyo')
 
 
-class Theme(commands.Cog):s
+class Theme(commands.Cog):
     three_topics_table = {
         'ジャンル': 'genres',
         'トピック': 'topics',
