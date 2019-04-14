@@ -100,7 +100,7 @@ class Timer(commands.Cog):
         await asyncio.sleep(10)
         
         # スプリント終了処理
-        if get_timer_record(message.author.id)['state'] == self.__class__.STATE_SPRINT:
+        if self.get_timer_record(message.author.id)['state'] == self.__class__.STATE_SPRINT:
             self.add_tomato(message.author.id)
             self.set_timer_record(message.author.id, self.__class__.STATE_NONE)
             tomato, today_tomato = self.get_tomato(message.author.id)
@@ -111,7 +111,7 @@ class Timer(commands.Cog):
             await message.channel.send(f'{message.author.mention}', embed=embed)
 
     async def rest(self, message):
-        record = get_timer_record(message.author.id)
+        record = self.get_timer_record(message.author.id)
         if  record is not None and record.get('state', 0) == self.__class__.STATE_SPRINT:
             await message.channel.send(f'{message.author.mention} タイマーを中止するね......')
         self.set_timer_record(message.author.id, self.__class__.STATE_REST)
