@@ -96,8 +96,8 @@ class Timer(commands.Cog):
         await message.channel.send(f'{message.author.mention}', embed=embed)
 
         # ウェイト
-        # await asyncio.sleep(60 * 25)
-        await asyncio.sleep(10)
+        await asyncio.sleep(60 * 25)
+        # await asyncio.sleep(10)
         
         # スプリント終了処理
         if self.get_timer_record(message.author.id)['state'] == self.__class__.STATE_SPRINT:
@@ -117,8 +117,8 @@ class Timer(commands.Cog):
         self.set_timer_record(message.author.id, self.__class__.STATE_REST)
         await message.channel.send(f'{message.author.mention} 今から5分間休憩だよ！ゆっくり休んでリフレッシュ！')
 
-        # await asyncio.sleep(60 * 5)
-        await asyncio.sleep(10)
+        await asyncio.sleep(60 * 5)
+        # await asyncio.sleep(10)
 
         if self.get_timer_record(message.author.id).get('state', 0) == self.__class__.STATE_REST:
             self.set_timer_record(message.author.id, self.__class__.STATE_NONE)

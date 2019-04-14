@@ -215,7 +215,7 @@ ID      VALUE
                         value="、".join(Theme.drawing_table.keys()),
                         inline=False)
 
-    @commands.group(name="ヘルプ")
+    @commands.command(name="ヘルプ")
     async def help_mention(self, ctx):
         embed = discord.Embed(title="Botくん2号", description='Bot2号くんです！（1号も一応いる）\n話しかけると創作のためのお題を出すよ！\n**コマンドを使用するときは一時チャットかDMを使いましょう！**', color=0x74e6bc)
         embed.add_field(name="コマンドの紹介",
@@ -244,7 +244,7 @@ ID      VALUE
             await message.channel.send(bot.del_record(table, commands[3:]))
 
     # サブコマンド内容
-    @commands.group(name="三題噺")
+    @commands.command(name="三題噺")
     async def mention_three_topics(self, ctx):
         message = ctx.message
         arg = message.content.split()
@@ -261,8 +261,8 @@ ID      VALUE
             if commands[1] == key:
                 await self.manage_table(message, commands, table)
 
-    @commands.group(name="お絵かき")
-    @commands.group(name="お絵描き")
+    @commands.command(name="お絵かき")
+    @commands.command(name="お絵描き")
     async def mention_drawing(self, ctx):
         message = ctx.message
         arg = message.content.split()
