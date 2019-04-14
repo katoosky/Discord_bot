@@ -262,7 +262,6 @@ ID      VALUE
                 await self.manage_table(message, commands, table)
 
     @commands.command(name="お絵かき")
-    @commands.command(name="お絵描き")
     async def mention_drawing(self, ctx):
         message = ctx.message
         arg = message.content.split()
