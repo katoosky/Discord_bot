@@ -5,29 +5,11 @@ from discord.ext import commands
 
 
 # 変数
-version="1.0.5"
-token = os.environ['BOT1_TOKEN']
-bot = commands.Bot(command_prefix=commands.when_mentioned_or("!"),
-                   description='This is Botくん1号 for managing guild "KIDDING KID".')
-bot.remove_command('help')
+version="2.0.0"
 
-help_text = """
-Botくん1号 Commands
-    !info
-        Show Bot informations.
-    !make_project PROJECT_NAME
-        Make a new project with a new role.
-    !remove_project PROJECT_NAME
-        Remove a project.
-"""
-
-class GuildManager:
+class GuildController(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-    
-    @commands.command()
-    async def help(self, ctx):
-        await ctx.send('```'+help_text+'```')
 
     @commands.command()
     async def info(self, ctx):
@@ -37,11 +19,12 @@ class GuildManager:
         # give info about you here
         embed.add_field(name="Author", value="雅猫")
         # Shows the number of servers the bot is member of.
-        embed.add_field(name="Server count", value=f"{len(bot.guilds)}")
+        embed.add_field(name="Server count", value=f"{len(self.bot.guilds)}")
         # give users a link to invite thsi bot to their server
         embed.add_field(name="Invite", value="https://discordapp.com/api/oauth2/authorize?client_id=472539773328818176&permissions=0&scope=bot")
         await ctx.send(embed=embed)
 
+    @commands.Cog.listener()
     async def on_member_join(self, member):
         role = discord.utils.get(member.guild.roles, name="ゲスト")
         await member.add_roles([role])
@@ -124,13 +107,6 @@ class GuildManager:
     async def get_channels(self, ctx):
         print(ctx.guild.categories[0].channels)
 
-@bot.event
-async def on_ready():
-    print('Logged in as {0} ({0.id})'.format(bot.user))
-    print('------')
-
-bot.add_cog(GuildManager(bot))
-# bot.run(token)
 
 def format_category_outline(category):
     text = """
@@ -178,3 +154,7 @@ def format_category_outline(category):
 　　会議や話し合いなどで使ってください
 """
     return text.format(*category.channels)
+
+# Bot本体側からコグを読み込む際に呼び出される関数。
+def setup(bot):
+    bot.add_cog(GuildController(bot))
