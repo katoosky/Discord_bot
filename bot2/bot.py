@@ -48,7 +48,7 @@ class Bot2(commands.Bot):
 
     # メッセージを受信した際に呼び出されるイベント
     async def on_message(self, message):
-        ctx = await self.bot.get_context(message)
+        ctx = await self.get_context(message)
         # コマンドだったらコマンドの処理
         
         if message.author.bot: # メッセージの送信者がBotなら、処理を終了する。
