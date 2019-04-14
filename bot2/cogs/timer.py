@@ -96,13 +96,13 @@ class Timer(commands.Cog):
         await message.channel.send(f'{message.author.mention}', embed=embed)
 
         # ウェイト
-        await asyncio.sleep(60 * 25)
-        # await asyncio.sleep(10)
+        # await asyncio.sleep(60 * 25)
+        await asyncio.sleep(10)
         
         # スプリント終了処理
         if get_timer_record(message.author.id)['state'] == self.__class__.STATE_SPRINT:
             self.add_tomato(message.author.id)
-            self.set_timer_record(message.author.id, STATE_NONE)
+            self.set_timer_record(message.author.id, self.__class__.STATE_NONE)
             tomato, today_tomato = self.get_tomato(message.author.id)
             description = "25分経ったよ！お疲れさま\nトマトはこれだけたまったよ！"
             embed = discord.Embed(title="ポモドーロタイマー", description=description, color=0xf31105)
@@ -114,20 +114,20 @@ class Timer(commands.Cog):
         record = get_timer_record(message.author.id)
         if  record is not None and record.get('state', 0) == self.__class__.STATE_SPRINT:
             await message.channel.send(f'{message.author.mention} タイマーを中止するね......')
-        self.set_timer_record(message.author.id, STATE_REST)
+        self.set_timer_record(message.author.id, self.__class__.STATE_REST)
         await message.channel.send(f'{message.author.mention} 今から5分間休憩だよ！ゆっくり休んでリフレッシュ！')
 
-        await asyncio.sleep(60 * 5)
-        # await asyncio.sleep(10)
+        # await asyncio.sleep(60 * 5)
+        await asyncio.sleep(10)
 
         if self.get_timer_record(message.author.id).get('state', 0) == self.__class__.STATE_REST:
-            self.set_timer_record(message.author.id, STATE_NONE)
+            self.set_timer_record(message.author.id, Sself.__class__.TATE_NONE)
             await message.channel.send(f'{message.author.mention} 休憩終了だよ！次も頑張ろう！')
 
     async def stop(self, message):
         record = self.get_timer_record(message.author.id)
         if record is not None and record.get('state', 0) in (self.__class__.STATE_SPRINT, self.__class__.STATE_REST):
-            self.set_timer_record(message.author.id, STATE_NONE)
+            self.set_timer_record(message.author.id, self.__class__.STATE_NONE)
             await message.channel.send(f'{message.author.mention} タイマーを中止するね......')
         else:
             await message.channel.send(f'{message.author.mention} タイマーは動いてないよ？')
