@@ -208,7 +208,7 @@ ID      VALUE
                         例えば、*「@Botくん2号 お絵かき 特徴 追加 狐耳 エルフ耳」*みたいな感じだよ！\n\n \
                         いろんな設定を追加していってね！",
                         inline=False)
-        add_help_tables(embed)
+        self.add_help_tables(embed)
 
     def add_help_tables(self, embed):
         embed.add_field(name="お絵かき 設定項目一覧",
