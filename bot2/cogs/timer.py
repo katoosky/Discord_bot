@@ -121,7 +121,7 @@ class Timer(commands.Cog):
         await asyncio.sleep(10)
 
         if self.get_timer_record(message.author.id).get('state', 0) == self.__class__.STATE_REST:
-            self.set_timer_record(message.author.id, Sself.__class__.TATE_NONE)
+            self.set_timer_record(message.author.id, self.__class__.TATE_NONE)
             await message.channel.send(f'{message.author.mention} 休憩終了だよ！次も頑張ろう！')
 
     async def stop(self, message):
