@@ -28,6 +28,7 @@ class Timer(commands.Cog):
     # TestCogクラスのコンストラクタ。Botを受取り、インスタンス変数として保持。
     def __init__(self, bot):
         self.bot = bot
+        self.check_timer_table()
 
     def check_timer_table(self):
         with psycopg2.connect(dsn) as conn:
@@ -85,101 +86,84 @@ class Timer(commands.Cog):
         tomato = tomato['tomato'] if tomato is not None else 0
         return tomato, today_tomato
 
-    async def sprint(self, message):
+    @commands.group(name="タイマー", brief="タイマーをスタートする", invoke_without_command=True)
+    async def timer(self, ctx):
         # スプリント開始処理
-        self.set_timer_record(message.author.id, self.__class__.STATE_SPRINT)
-        tomato, today_tomato = self.get_tomato(message.author.id)
+        self.set_timer_record(ctx.message.author.id, self.__class__.STATE_SPRINT)
+        tomato, today_tomato = self.get_tomato(ctx.message.author.id)
         description = "25分集中して作業を頑張ろう！"
         embed = discord.Embed(title="ポモドーロタイマー", description=description, color=0xf31105)
         embed.add_field(name="今日のトマト", value=today_tomato)
         embed.add_field(name="これまでのトマト", value=tomato)
-        await message.channel.send(f'{message.author.mention}', embed=embed)
+        await ctx.send(f'{ctx.message.author.mention}', embed=embed)
 
         # ウェイト
         await asyncio.sleep(60 * 25)
         # await asyncio.sleep(10)
         
         # スプリント終了処理
-        if self.get_timer_record(message.author.id)['state'] == self.__class__.STATE_SPRINT:
-            self.add_tomato(message.author.id)
-            self.set_timer_record(message.author.id, self.__class__.STATE_NONE)
-            tomato, today_tomato = self.get_tomato(message.author.id)
+        if self.get_timer_record(ctx.message.author.id)['state'] == self.__class__.STATE_SPRINT:
+            self.add_tomato(ctx.message.author.id)
+            self.set_timer_record(ctx.message.author.id, self.__class__.STATE_NONE)
+            tomato, today_tomato = self.get_tomato(ctx.message.author.id)
             description = "25分経ったよ！お疲れさま\nトマトはこれだけたまったよ！"
             embed = discord.Embed(title="ポモドーロタイマー", description=description, color=0xf31105)
             embed.add_field(name="今日のトマト", value=today_tomato)
             embed.add_field(name="これまでのトマト", value=tomato)
-            await message.channel.send(f'{message.author.mention}', embed=embed)
+            await ctx.send(f'{ctx.message.author.mention}', embed=embed)
 
-    async def rest(self, message):
-        record = self.get_timer_record(message.author.id)
+    @timer.command(name="休憩", brief="休憩用のタイマーをスタートする")
+    async def rest(self, ctx):
+        record = self.get_timer_record(ctx.message.author.id)
         if  record is not None and record.get('state', 0) == self.__class__.STATE_SPRINT:
-            await message.channel.send(f'{message.author.mention} タイマーを中止するね......')
+            await ctx.send(f'{ctx.message.author.mention} タイマーを中止するね......')
         self.set_timer_record(message.author.id, self.__class__.STATE_REST)
-        await message.channel.send(f'{message.author.mention} 今から5分間休憩だよ！ゆっくり休んでリフレッシュ！')
+        await ctx.send(f'{ctx.message.author.mention} 今から5分間休憩だよ！ゆっくり休んでリフレッシュ！')
 
         await asyncio.sleep(60 * 5)
         # await asyncio.sleep(10)
 
-        if self.get_timer_record(message.author.id).get('state', 0) == self.__class__.STATE_REST:
+        if self.get_timer_record(ctx.message.author.id).get('state', 0) == self.__class__.STATE_REST:
             self.set_timer_record(message.author.id, self.__class__.STATE_NONE)
-            await message.channel.send(f'{message.author.mention} 休憩終了だよ！次も頑張ろう！')
+            await ctx.send(f'{ctx.message.author.mention} 休憩終了だよ！次も頑張ろう！')
 
-    async def stop(self, message):
-        record = self.get_timer_record(message.author.id)
+    @timer.command(name="中止", brief="タイマーを中止する")
+    async def stop(self, ctx):
+        record = self.get_timer_record(ctx.message.author.id)
         if record is not None and record.get('state', 0) in (self.__class__.STATE_SPRINT, self.__class__.STATE_REST):
-            self.set_timer_record(message.author.id, self.__class__.STATE_NONE)
-            await message.channel.send(f'{message.author.mention} タイマーを中止するね......')
+            self.set_timer_record(ctx.message.author.id, self.__class__.STATE_NONE)
+            await ctx.send(f'{ctx.message.author.mention} タイマーを中止するね......')
         else:
-            await message.channel.send(f'{message.author.mention} タイマーは動いてないよ？')
+            await ctx.send(f'{ctx.message.author.mention} タイマーは動いてないよ？')
 
-    async def tomato(self, message):
-        tomato, today_tomato = self.get_tomato(message.author.id)
+    @timer.command(name="トマト", brief="溜まったトマトの数を見る")
+    async def tomato(self, ctx):
+        tomato, today_tomato = self.get_tomato(ctx.message.author.id)
         description = "あなたのトマトはこのくらいたまってるよ！"
         embed = discord.Embed(title="ポモドーロタイマー", description=description, color=0xf31105)
         embed.add_field(name="今日のトマト", value=today_tomato)
         embed.add_field(name="これまでのトマト", value=tomato)
-        await message.channel.send(f'{message.author.mention}', embed=embed)
+        await ctx.send(f'{ctx.message.author.mention}', embed=embed)
 
     def calc_timedelta(self, td):
         if 59 < td.seconds:
             return int(td.seconds/60), td.seconds%60
         return 0, td.seconds
 
-    async def remaining(self, message):
+    @timer.command(name="残り時間", aliases=["残り", "時間"], brief="残り時間を確認する")
+    async def remaining(self, ctx):
         now = datetime.now(tz=jst).replace(tzinfo=jst)
-        record = self.get_timer_record(message.author.id)
+        record = self.get_timer_record(ctx.message.author.id)
         if record is None or record.get('state') == self.__class__.STATE_NONE:
-            await message.channel.send(f'{message.author.mention} タイマーは動いてないよ')
+            await ctx.send(f'{ctx.message.author.mention} タイマーは動いてないよ')
         elif record.get('state') == self.__class__.STATE_SPRINT:
             remaining_time = record.get('updated_at').replace(tzinfo=jst) - now + timedelta(minutes=25)
             minute, second = self.calc_timedelta(remaining_time)
-            await message.channel.send(f'{message.author.mention} タイマーは残り{minute}分{second}だよ')
+            await ctx.send(f'{ctx.message.author.mention} タイマーは残り{minute}分{second}だよ')
         elif record.get('state') == self.__class__.STATE_REST:
             remaining_time = record.get('updated_at').replace(tzinfo=jst) - now + timedelta(minutes=5)
             minute, second = self.calc_timedelta(remaining_time)
-            await message.channel.send(f'{message.author.mention} 休憩時間は残り{minute}分{second}だよ')
-
-    # DBの処理周りが冗長だけど、使用頻度は高くない想定なのでこのまま
-    @commands.command(name="タイマー")
-    async def mention_timer(self, ctx):
-        self.check_timer_table()
-
-        # コマンドの分解する
-        arg = ctx.message.content.split()
-        commands = arg[1:]
-
-        if len(commands) == 1:
-            await self.sprint(ctx.message)
-        else:
-            if commands[1] == "休憩":
-                await self.rest(ctx.message)
-            elif commands[1] == "中止":
-                await self.stop(ctx.message)
-            elif commands[1] == "トマト":
-                await self.tomato(ctx.message)
-            elif commands[1] in  ("残り", "時間", "残り時間"):
-                await self.remaining(ctx.message)
-            
+            await ctx.send(f'{ctx.message.author.mention} 休憩時間は残り{minute}分{second}だよ')
 
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):
