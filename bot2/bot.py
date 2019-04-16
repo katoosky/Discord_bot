@@ -19,9 +19,9 @@ version="2.0.0"
 class Bot2(commands.Bot):
     TOKEN = os.environ['DISCORD_BOT_TOKEN_2']
     INITIAL_COGS = [
-        'cogs.quote',
-        'cogs.theme',
-        'cogs.timer',
+        'bot2.cogs.quote',
+        'bot2.cogs.theme',
+        'bot2.cogs.timer'
     ]
 
     # MyBotのコンストラクタ。
@@ -48,32 +48,14 @@ class Bot2(commands.Bot):
 
     # メッセージを受信した際に呼び出されるイベント
     async def on_message(self, message):
-        ctx = await self.bot.get_context(message)
+        ctx = await self.get_context(message)
         # コマンドだったらコマンドの処理
         
         if message.author.bot: # メッセージの送信者がBotなら、処理を終了する。
             return
         await self.process_commands(message)
-        # else:
-        #     # メンションだけだったら返事を返す
-        #     arg = message.content.split()
-        #     if len(arg) == 1:
-        #         await message.channel.send(f'やあ{message.author.mention}さん！元気かい？\nヘルプを見る場合は*「@Botくん2号 ヘルプ」*って書き込んでね！\n**コマンドを使用するときは一時チャットかDMを使いましょう！**')
-        #         return
-
-        #     # メンションでのコマンド実行だったらメンション用の関数を呼び出す
-        #     commands = arg[1:]
-        #     if commands[0] == "ヘルプ":
-        #         await message.channel.send(embed=help_mention())
-        #     elif commands[0] == "三題噺":
-        #         await mention_three_topics(message, commands)
-        #     elif commands[0] == "お絵かき" or commands[0] == "お絵描き":
-        #         await mention_drawing(message, commands)
-        #     elif commands[0] == "タイマー":
-        #         await mention_timer(message, commands)
-
 
 
 bot = Bot2()
-bot.run(Bot2.TOKEN)
+# bot.run(Bot2.TOKEN)
 
