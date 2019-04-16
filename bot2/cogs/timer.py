@@ -117,14 +117,14 @@ class Timer(commands.Cog):
         record = self.get_timer_record(ctx.message.author.id)
         if  record is not None and record.get('state', 0) == self.__class__.STATE_SPRINT:
             await ctx.send(f'{ctx.message.author.mention} タイマーを中止するね......')
-        self.set_timer_record(message.author.id, self.__class__.STATE_REST)
+        self.set_timer_record(ctx.message.author.id, self.__class__.STATE_REST)
         await ctx.send(f'{ctx.message.author.mention} 今から5分間休憩だよ！ゆっくり休んでリフレッシュ！')
 
         await asyncio.sleep(60 * 5)
         # await asyncio.sleep(10)
 
         if self.get_timer_record(ctx.message.author.id).get('state', 0) == self.__class__.STATE_REST:
-            self.set_timer_record(message.author.id, self.__class__.STATE_NONE)
+            self.set_timer_record(ctx.message.author.id, self.__class__.STATE_NONE)
             await ctx.send(f'{ctx.message.author.mention} 休憩終了だよ！次も頑張ろう！')
 
     @timer.command(name="中止", brief="タイマーを中止する")
