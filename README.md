@@ -9,3 +9,7 @@
 - Pull Requestを作成する
 
 Pull Requestがきたらこちらで確認して問題なければマージします。
+
+# リファレンス
+- [日本語公式リファレンス](https://discordpy.readthedocs.io/ja/latest/)
+- [discord.pyのBot Commands Frameworkを用いたBot開発](https://qiita.com/Lazialize/items/81f1430d9cd57fbd82fb)
