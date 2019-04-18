@@ -21,7 +21,8 @@ class Bot2(commands.Bot):
     INITIAL_COGS = [
         'bot2.cogs.quote',
         'bot2.cogs.theme',
-        'bot2.cogs.timer'
+        'bot2.cogs.timer',
+        'bot2.cogs.reaction',
     ]
 
     # MyBotのコンストラクタ。
