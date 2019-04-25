@@ -12,7 +12,7 @@ class Reaction(commands.Cog):
     
     @commands.Cog.listener()
     async def on_message(self, message):
-        if message.content.startswith("シージ") or message.content.startswith("しーじ"):
+        if 'シージ' in message.content or 'しーじ' in message.content:
             await message.add_reaction('🌈')
             await message.add_reaction('6\u20e3')
 
