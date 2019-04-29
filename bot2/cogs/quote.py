@@ -4,7 +4,7 @@ import re
 import discord # discord.pyをインポート
 from discord.ext import commands # Bot Commands Frameworkのインポート
 
-pattern = r"https://discordapp.com/channels/.*/.*/.*"
+pattern = r"https://discordapp.com/channels/\d+/\d+/\d+"
 repattern = re.compile(pattern)
 
 # コグとして用いるクラスを定義。
@@ -28,11 +28,11 @@ class Quote(commands.Cog):
     
     @commands.Cog.listener()
     async def on_message(self, message):
-        if repattern.search(message.content):
-            print("quote message.")
-            quote = self.bot.get_cog('Quote')
-            if quote is not None:
-                messages = message.content.split('/')
+        quote = self.bot.get_cog('Quote')
+        if quote is not None:
+            for match in repattern.finditer(message.content):
+                print(f"quote message: {match.group()}")
+                messages = match.group().split('/')
                 print(messages)
                 await quote.quote_message(message, *messages[4:])
 
