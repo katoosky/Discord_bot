@@ -1,8 +1,11 @@
 from datetime import datetime
+import re
 
 import discord # discord.pyをインポート
 from discord.ext import commands # Bot Commands Frameworkのインポート
 
+pattern = r"https://discordapp.com/channels/.*/.*/.*"
+repattern = re.compile(pattern)
 
 # コグとして用いるクラスを定義。
 class Quote(commands.Cog):
@@ -22,10 +25,10 @@ class Quote(commands.Cog):
             embed.set_author(name=target.author.name, icon_url=target.author.avatar_url)
             embed.set_footer(text="via discordbot")
             await message.channel.send(embed=embed)
-
+    
     @commands.Cog.listener()
     async def on_message(self, message):
-        if message.content.startswith("https://discordapp.com/channels/"):
+        if repattern.search(message.content):
             print("quote message.")
             quote = self.bot.get_cog('Quote')
             if quote is not None:
