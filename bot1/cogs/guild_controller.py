@@ -73,7 +73,6 @@ class GuildController(commands.Cog):
         await ctx.guild.create_text_channel('システム通知', category=category)
         overwrites = {
             ctx.guild.me: discord.PermissionOverwrite(read_messages=True, read_message_history=False),
-            ctx.guild.role_hierarchy[1]: discord.PermissionOverwrite(read_messages=True, read_message_history=False),
             ctx.guild.default_role: discord.PermissionOverwrite(read_messages=False, send_messages=False, read_message_history=False),
             category_role: discord.PermissionOverwrite(read_messages=True,  read_message_history=False),
         }
