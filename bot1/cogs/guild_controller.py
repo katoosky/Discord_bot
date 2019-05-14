@@ -52,7 +52,6 @@ class GuildController(commands.Cog):
         # カテゴリーの作成
         overwrites = {
             ctx.guild.me: discord.PermissionOverwrite(read_messages=True),
-            ctx.guild.role_hierarchy[1]: discord.PermissionOverwrite(read_messages=True, connect=True),
             ctx.guild.default_role: discord.PermissionOverwrite(read_messages=False),
             category_role: discord.PermissionOverwrite(read_messages=True, connect=True),
         }
@@ -61,7 +60,6 @@ class GuildController(commands.Cog):
         # チャンネルの作成
         overwrites = {
             ctx.guild.me: discord.PermissionOverwrite(read_messages=True, send_messages=True),
-            ctx.guild.role_hierarchy[1]: discord.PermissionOverwrite(read_messages=True),
             ctx.guild.default_role: discord.PermissionOverwrite(read_messages=False, send_messages=False),
             category_role: discord.PermissionOverwrite(send_messages=False),
         }
