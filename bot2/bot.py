@@ -56,6 +56,11 @@ class Bot2(commands.Bot):
             return
         await self.process_commands(message)
 
+    async def on_command_error(self, ctx, error):
+        if isinstance(error, commands.CommandNotFound):
+            await ctx.send('Command not found')
+        else:
+            print(f'```A error is occured\n{error}\n{"".join(traceback.format_tb(error.__traceback__))}```')
 
 bot = Bot2()
 # bot.run(Bot2.TOKEN)
