@@ -21,7 +21,7 @@ class GuildController(commands.Cog):
             await ctx.channel.send(f'Project "{project}" is not found.')
     
     def rename_project_name(self, project):
-        return project.replace('.', '').replace(' ', '-').replace('!', '')
+        return project.lower().replace('.', '').replace(' ', '-').replace('!', '')
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
