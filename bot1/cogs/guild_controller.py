@@ -118,7 +118,7 @@ class GuildController(commands.Cog):
         project_role = discord.utils.get(ctx.guild.roles, name=project)
         await project_role.delete()
         for channel in archive.channels:
-            if channel.name.endswith (f'_{project}'):
+            if channel.name.endswith(f'_{project}'):
                 await channel.delete()
     
         await ctx.channel.send(f'Complete removing archived project {project} from "Archive" in {ctx.guild.name}.')
