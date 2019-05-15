@@ -19,6 +19,9 @@ class GuildController(commands.Cog):
         project_category = discord.utils.get(ctx.guild.categories, name=project)
         if project_category is None:
             await ctx.channel.send(f'Project "{project}" is not found.')
+    
+    def rename_project_name(self, project):
+        return project.replace('.', '').replace(' ', '-').replace('!', '')
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
@@ -29,6 +32,7 @@ class GuildController(commands.Cog):
     async def make_project(self, ctx, project: str):
         await self.check_perm_manage_channels(ctx)
 
+        project = self.rename_project_name(project)
         await ctx.channel.send('Make project {0} to {1}.'.format(project, ctx.guild.name))
         # roleの作成
         category_role = await ctx.guild.create_role(
@@ -76,6 +80,8 @@ class GuildController(commands.Cog):
     async def remove_project(self, ctx, project: str):
         await self.check_perm_manage_channels(ctx)
 
+        project = self.rename_project_name(project)
+        await self.check_exist_project(ctx, project)
         await ctx.channel.send('Remove project {0} from {1}.'.format(project, ctx.guild.name))
         project_role = discord.utils.get(ctx.guild.roles, name=project)
         await project_role.delete()
@@ -89,8 +95,9 @@ class GuildController(commands.Cog):
     @commands.command(aliases=['ap'], brief="Archive a project.")
     async def archive_project(self, ctx, project: str):
         await self.check_perm_manage_channels(ctx)
-        await self.check_exist_project(ctx, project)
+        project = self.rename_project_name(project)
 
+        await self.check_exist_project(ctx, project)
         await ctx.channel.send('Archive project {0} from {1} to "Archive".'.format(project, ctx.guild.name))
         archive = discord.utils.get(ctx.guild.categories, name='Archive')
         if archive is None:
@@ -109,6 +116,7 @@ class GuildController(commands.Cog):
     @commands.command(aliases=['rap'], brief="Remove archived a project.")
     async def remove_archived_project(self, ctx, project: str):
         await self.check_perm_manage_channels(ctx)
+        project = self.rename_project_name(project)
 
         await ctx.channel.send(f'Remove archived project {project} from "Archive" in {ctx.guild.name}.')
         archive = discord.utils.get(ctx.guild.categories, name='Archive')
