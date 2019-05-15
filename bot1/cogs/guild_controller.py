@@ -53,14 +53,14 @@ class GuildController(commands.Cog):
             ctx.guild.default_role: discord.PermissionOverwrite(read_messages=False, send_messages=False),
             category_role: discord.PermissionOverwrite(send_messages=False),
         }
-        outline = await ctx.guild.create_text_channel(f'{project}_カテゴリ概要', category=category, overwrites=overwrites)
-        await ctx.guild.create_text_channel(f'{project}_仕様情報', category=category, overwrites=overwrites)
-        await ctx.guild.create_text_channel(f'{project}_連絡', category=category)
-        await ctx.guild.create_text_channel(f'{project}_相談・話し合い', category=category)
-        await ctx.guild.create_text_channel(f'{project}_雑談', category=category)
-        await ctx.guild.create_text_channel(f'{project}_アイディア', category=category)
-        await ctx.guild.create_text_channel(f'{project}_デバッグ', category=category)
-        await ctx.guild.create_text_channel(f'{project}_システム通知', category=category)
+        outline = await ctx.guild.create_text_channel(f'カテゴリ概要_{project}', category=category, overwrites=overwrites)
+        await ctx.guild.create_text_channel(f'仕様情報_{project}', category=category, overwrites=overwrites)
+        await ctx.guild.create_text_channel(f'連絡_{project}', category=category)
+        await ctx.guild.create_text_channel(f'相談・話し合い_{project}', category=category)
+        await ctx.guild.create_text_channel(f'雑談_{project}', category=category)
+        await ctx.guild.create_text_channel(f'アイディア_{project}', category=category)
+        await ctx.guild.create_text_channel(f'デバッグ_{project}', category=category)
+        await ctx.guild.create_text_channel(f'システム通知_{project}', category=category)
         overwrites = {
             ctx.guild.me: discord.PermissionOverwrite(read_messages=True, read_message_history=False),
             ctx.guild.default_role: discord.PermissionOverwrite(read_messages=False, send_messages=False, read_message_history=False),
@@ -118,7 +118,7 @@ class GuildController(commands.Cog):
         project_role = discord.utils.get(ctx.guild.roles, name=project)
         await project_role.delete()
         for channel in archive.channels:
-            if channel.name.startswith(f'{project}_'):
+            if channel.name.endswith (f'_{project}'):
                 await channel.delete()
     
         await ctx.channel.send(f'Complete removing archived project {project} from "Archive" in {ctx.guild.name}.')
