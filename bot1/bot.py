@@ -6,8 +6,7 @@ from discord.ext import commands
 
 
 # 変数
-version="2.0.0"
-
+version="3.0.2"
 
 class Bot1(commands.Bot):
     TOKEN = os.environ['DISCORD_BOT_TOKEN_1']
@@ -31,7 +30,7 @@ class Bot1(commands.Bot):
             except Exception:
                 traceback.print_exc()    # Botの準備完了時に呼び出されるイベント
 
-    @commands.command()
+    @bot.command()
     async def info(self, ctx):
         """Show Bot informations."""
         embed = discord.Embed(title="Botくん1号", description='This is Botくん1号 for managing guild.', color=0x74e6bc)

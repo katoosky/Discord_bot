@@ -4,10 +4,38 @@ import discord
 from discord.ext import commands
 
 
-# 変数
-version="3.0.0"
-
 class GuildController(commands.Cog):
+    trans_dict = {
+        ' ': '-',
+        '　': '-',
+        '_': '-',
+        '.': '',
+        ',': '',
+        '!': '',
+        '!': '',
+        '"': '',
+        '#': '',
+        '$': '',
+        '%': '',
+        '&': '',
+        "'": '',
+        '(': '',
+        ')': '',
+        '=': '',
+        '~': '',
+        '|': '',
+        '¥': '',
+        '^': '',
+        '-': '',
+        '[': '',
+        '@': '',
+        ']': '',
+        ':': '',
+        ';': '',
+        '/': '',
+        '?': '',
+    }
+    translate_table = str.maketrans(trans_dict)
     def __init__(self, bot):
         self.bot = bot
 
@@ -19,9 +47,11 @@ class GuildController(commands.Cog):
         project_category = discord.utils.get(ctx.guild.categories, name=project)
         if project_category is None:
             await ctx.channel.send(f'Project "{project}" is not found.')
+            return False
+        return True
     
     def rename_project_name(self, project):
-        return project.lower().replace('.', '').replace(' ', '-').replace('!', '')
+        return project.translate(self.translate_table).lower()
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
@@ -31,8 +61,9 @@ class GuildController(commands.Cog):
     @commands.command(aliases=['mp'], brief="Make a new project with a new role.")
     async def make_project(self, ctx, project: str):
         await self.check_perm_manage_channels(ctx)
-
-        project = self.rename_project_name(project)
+        if await self.check_exist_project(ctx, project):
+            await ctx.channel.send(f'Project "{project}" is already exist.')
+            return
         await ctx.channel.send('Make project {0} to {1}.'.format(project, ctx.guild.name))
         # roleの作成
         category_role = await ctx.guild.create_role(
@@ -52,19 +83,20 @@ class GuildController(commands.Cog):
         category = await ctx.guild.create_category(project, overwrites=overwrites)
 
         # チャンネルの作成
+        project_channel_name = self.rename_project_name(project)
         overwrites = {
             ctx.guild.me: discord.PermissionOverwrite(read_messages=True, send_messages=True),
             ctx.guild.default_role: discord.PermissionOverwrite(read_messages=False, send_messages=False),
             category_role: discord.PermissionOverwrite(send_messages=False),
         }
-        outline = await ctx.guild.create_text_channel(f'カテゴリ概要_{project}', category=category, overwrites=overwrites)
-        await ctx.guild.create_text_channel(f'仕様情報_{project}', category=category, overwrites=overwrites)
-        await ctx.guild.create_text_channel(f'連絡_{project}', category=category)
-        await ctx.guild.create_text_channel(f'相談・話し合い_{project}', category=category)
-        await ctx.guild.create_text_channel(f'雑談_{project}', category=category)
-        await ctx.guild.create_text_channel(f'アイディア_{project}', category=category)
-        await ctx.guild.create_text_channel(f'デバッグ_{project}', category=category)
-        await ctx.guild.create_text_channel(f'システム通知_{project}', category=category)
+        outline = await ctx.guild.create_text_channel(f'カテゴリ概要_{project_channel_name}', category=category, overwrites=overwrites)
+        await ctx.guild.create_text_channel(f'仕様情報_{project_channel_name}', category=category, overwrites=overwrites)
+        await ctx.guild.create_text_channel(f'連絡_{project_channel_name}', category=category)
+        await ctx.guild.create_text_channel(f'相談・話し合い_{project_channel_name}', category=category)
+        await ctx.guild.create_text_channel(f'雑談_{project_channel_name}', category=category)
+        await ctx.guild.create_text_channel(f'アイディア_{project_channel_name}', category=category)
+        await ctx.guild.create_text_channel(f'デバッグ_{project_channel_name}', category=category)
+        await ctx.guild.create_text_channel(f'システム通知_{project_channel_name}', category=category)
         overwrites = {
             ctx.guild.me: discord.PermissionOverwrite(read_messages=True, read_message_history=False),
             ctx.guild.default_role: discord.PermissionOverwrite(read_messages=False, send_messages=False, read_message_history=False),
@@ -79,8 +111,8 @@ class GuildController(commands.Cog):
     @commands.command(aliases=['rp'], brief="Remove a project.")
     async def remove_project(self, ctx, project: str):
         await self.check_perm_manage_channels(ctx)
+        project_channel_name = self.rename_project_name(project)
 
-        project = self.rename_project_name(project)
         await self.check_exist_project(ctx, project)
         await ctx.channel.send('Remove project {0} from {1}.'.format(project, ctx.guild.name))
         project_role = discord.utils.get(ctx.guild.roles, name=project)
@@ -95,7 +127,6 @@ class GuildController(commands.Cog):
     @commands.command(aliases=['ap'], brief="Archive a project.")
     async def archive_project(self, ctx, project: str):
         await self.check_perm_manage_channels(ctx)
-        project = self.rename_project_name(project)
 
         await self.check_exist_project(ctx, project)
         await ctx.channel.send('Archive project {0} from {1} to "Archive".'.format(project, ctx.guild.name))
@@ -104,6 +135,7 @@ class GuildController(commands.Cog):
             archive = await ctx.guild.create_category('Archive')
             await ctx.channel.send(f'Create archive category.')
         project_category = discord.utils.get(ctx.guild.categories, name=project)
+
         for channel in project_category.channels:
             if channel.name == 'temporary' or isinstance(channel, discord.VoiceChannel):
                 await channel.delete()
@@ -113,10 +145,35 @@ class GuildController(commands.Cog):
     
         await ctx.channel.send('Complete archiving project {0} from {1} to "Archive".'.format(project, ctx.guild.name))
     
+    @commands.command(aliases=['uap'], brief="Remove archived a project.")
+    async def unarchive_project(self, ctx, project: str):
+        await self.check_perm_manage_channels(ctx)
+
+        await ctx.channel.send(f'Unarchive channels of project {project} from "Archive" in {ctx.guild.name}.')
+        archive = discord.utils.get(ctx.guild.categories, name='Archive')
+        if archive is None:
+            await ctx.channel.send(f'Archive category is not found.')
+            return
+
+        # カテゴリーの作成
+        project_role = discord.utils.get(ctx.guild.roles, name=project)
+        overwrites = {
+            ctx.guild.me: discord.PermissionOverwrite(read_messages=True),
+            ctx.guild.default_role: discord.PermissionOverwrite(read_messages=False),
+            project_role: discord.PermissionOverwrite(read_messages=True, connect=True),
+        }
+        category = await ctx.guild.create_category(project, overwrites=overwrites)
+
+        project_channel_name = self.rename_project_name(project)
+        for channel in archive.channels:
+            if channel.name.endswith(f'_{project_channel_name}'):
+                await channel.edit(category=category)
+    
+        await ctx.channel.send(f'Complete unarchiving channels of project {project} from "Archive" in {ctx.guild.name}.')
+    
     @commands.command(aliases=['rap'], brief="Remove archived a project.")
     async def remove_archived_project(self, ctx, project: str):
         await self.check_perm_manage_channels(ctx)
-        project = self.rename_project_name(project)
 
         await ctx.channel.send(f'Remove archived project {project} from "Archive" in {ctx.guild.name}.')
         archive = discord.utils.get(ctx.guild.categories, name='Archive')
@@ -125,15 +182,31 @@ class GuildController(commands.Cog):
             return
         project_role = discord.utils.get(ctx.guild.roles, name=project)
         await project_role.delete()
+
+        project_channel_name = self.rename_project_name(project)
         for channel in archive.channels:
-            if channel.name.endswith(f'_{project}'):
+            if channel.name.endswith(f'_{project_channel_name}'):
                 await channel.delete()
     
         await ctx.channel.send(f'Complete removing archived project {project} from "Archive" in {ctx.guild.name}.')
     
     @commands.command()
-    async def get_channels(self, ctx):
+    async def get_channels(self, ctx, hidden=True):
         print(ctx.guild.categories[0].channels)
+
+    @commands.command(aliases=['tr'], brief="Test command rename a project name.", hidden=True)
+    async def test_rename(self, ctx, project: str):
+        project = self.rename_project_name(project)
+        embed = discord.Embed(title="Test: rename project name", color=0x74e6bc)
+        for k,v in self.trans_dict.items():
+            if k in [' ', '　']:
+                k = 'blank'
+            if len(v) == 0:
+                embed.add_field(name=f'{k}', value='removed')
+            else:
+                embed.add_field(name=f'{k}', value=f'{k} to {v}')
+        await ctx.send(embed=embed)
+        await ctx.channel.send(project)
 
 
 def format_category_outline(category):
