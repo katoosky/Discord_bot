@@ -159,14 +159,7 @@ class GuildController(commands.Cog):
         project_role = discord.utils.get(ctx.guild.roles, name=project)
         if project_role is None:
             await ctx.channel.send(f'Project role ({project}) is not found.')
-            project_role = await ctx.guild.create_role(
-                name=project, 
-                mentionable=True,
-                reason="Created category by command.",
-                colour=discord.Colour.from_rgb(45, 90, 74),
-                permissions=discord.Permissions.none(),
-            )
-            await ctx.channel.send(f'Created project role ({project}).')
+            return
 
         # カテゴリ作成
         overwrites = {
@@ -208,6 +201,21 @@ class GuildController(commands.Cog):
                 await channel.delete()
     
         await ctx.channel.send(f'Complete removing archived project {project} from "Archive" in {ctx.guild.name}.')
+
+    @commands.command(aliases=['cpr'], brief="Create project role.")
+    async def create_project_role(self, ctx, project: str):
+        project_role = discord.utils.get(ctx.guild.roles, name=project)
+        if project_role is not None:
+            await ctx.channel.send(f'Project role ({project}) is exist.')
+            return
+        project_role = await ctx.guild.create_role(
+            name=project, 
+            mentionable=True,
+            reason="Created category by command.",
+            colour=discord.Colour.from_rgb(45, 90, 74),
+            permissions=discord.Permissions.none(),
+        )
+        await ctx.channel.send(f'Created project role ({project}).')
     
     @commands.command(hidden=True)
     async def get_channels(self, ctx):
