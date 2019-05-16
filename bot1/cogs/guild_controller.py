@@ -168,6 +168,13 @@ class GuildController(commands.Cog):
         for channel in archive.channels:
             if channel.name.endswith(f'_{project_channel_name}'):
                 await channel.edit(category=category)
+        overwrites = {
+            ctx.guild.me: discord.PermissionOverwrite(read_messages=True, read_message_history=False),
+            ctx.guild.default_role: discord.PermissionOverwrite(read_messages=False, send_messages=False, read_message_history=False),
+            category_role: discord.PermissionOverwrite(read_messages=True,  read_message_history=False),
+        }
+        await ctx.guild.create_text_channel('temporary', category=category, overwrites=overwrites)
+        await ctx.guild.create_voice_channel(project, category=category)
     
         await ctx.channel.send(f'Complete unarchiving channels of project {project} from "Archive" in {ctx.guild.name}.')
     
