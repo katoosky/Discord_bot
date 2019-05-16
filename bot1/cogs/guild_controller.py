@@ -197,8 +197,8 @@ class GuildController(commands.Cog):
     
         await ctx.channel.send(f'Complete removing archived project {project} from "Archive" in {ctx.guild.name}.')
     
-    @commands.command()
-    async def get_channels(self, ctx, hidden=True):
+    @commands.command(hidden=True)
+    async def get_channels(self, ctx):
         print(ctx.guild.categories[0].channels)
 
     @commands.command(aliases=['tr'], brief="Test command rename a project name.", hidden=True)
