@@ -47,7 +47,8 @@ class Bot1(commands.Bot):
         if isinstance(error, commands.CommandNotFound):
             await ctx.send('Command not found')
         else:
-            print(f'```A error is occured\n{error}\n{"".join(traceback.format_tb(error.__traceback__))}```')
+            print(f'```A error is occured\n{error}\n{"".join(traceback.format_tb(error.__traceback__))}```')):
+            await ctx.send('Error is occured')
 
 
 bot = Bot1()

@@ -81,7 +81,7 @@ class GuildController(commands.Cog):
             category_role: discord.PermissionOverwrite(read_messages=True, connect=True),
         }
         category = await ctx.guild.create_category(project, overwrites=overwrites)
-        await category.edit(position=ctx.guild.categories-1)
+        await category.edit(position=len(ctx.guild.categories)-1)
 
         # チャンネルの作成
         project_channel_name = self.rename_project_name(project)
@@ -169,7 +169,7 @@ class GuildController(commands.Cog):
             project_role: discord.PermissionOverwrite(read_messages=True, connect=True),
         }
         category = await ctx.guild.create_category(project, overwrites=overwrites)
-        await category.edit(position=ctx.guild.categories-1)
+        await category.edit(position=len(ctx.guild.categories)-1)
 
         project_channel_name = self.rename_project_name(project)
         for channel in archive.channels:
