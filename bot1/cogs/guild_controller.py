@@ -155,8 +155,20 @@ class GuildController(commands.Cog):
             await ctx.channel.send(f'Archive category is not found.')
             return
 
-        # カテゴリーの作成
+        # ロールチェック
         project_role = discord.utils.get(ctx.guild.roles, name=project)
+        if project_role is None:
+            await ctx.channel.send(f'Project role ({project}) is not found.')
+            project_role = await ctx.guild.create_role(
+                name=project, 
+                mentionable=True,
+                reason="Created category by command.",
+                colour=discord.Colour.from_rgb(45, 90, 74),
+                permissions=discord.Permissions.none(),
+            )
+            await ctx.channel.send(f'Created project role ({project}).')
+
+        # カテゴリ作成
         overwrites = {
             ctx.guild.me: discord.PermissionOverwrite(read_messages=True),
             ctx.guild.default_role: discord.PermissionOverwrite(read_messages=False),
@@ -171,7 +183,7 @@ class GuildController(commands.Cog):
         overwrites = {
             ctx.guild.me: discord.PermissionOverwrite(read_messages=True, read_message_history=False),
             ctx.guild.default_role: discord.PermissionOverwrite(read_messages=False, send_messages=False, read_message_history=False),
-            category_role: discord.PermissionOverwrite(read_messages=True,  read_message_history=False),
+            project_role: discord.PermissionOverwrite(read_messages=True,  read_message_history=False),
         }
         await ctx.guild.create_text_channel('temporary', category=category, overwrites=overwrites)
         await ctx.guild.create_voice_channel(project, category=category)
