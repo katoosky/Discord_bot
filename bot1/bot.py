@@ -5,13 +5,11 @@ import discord
 from discord.ext import commands
 
 
-# 変数
-version="3.0.2"
-
 class Bot1(commands.Bot):
     TOKEN = os.environ['DISCORD_BOT_TOKEN_1']
     INITIAL_COGS = [
         'bot1.cogs.guild_controller',
+        'bot1.cogs.meta',
     ]
 
     # MyBotのコンストラクタ。
@@ -29,18 +27,6 @@ class Bot1(commands.Bot):
                 self.load_extension(cog)
             except Exception:
                 traceback.print_exc()    # Botの準備完了時に呼び出されるイベント
-
-    async def info(self, ctx):
-        """Show Bot informations."""
-        embed = discord.Embed(title="Botくん1号", description='This is Botくん1号 for managing guild.', color=0x74e6bc)
-        embed.add_field(name="Version", value=version)
-        # give info about you here
-        embed.add_field(name="Author", value="雅猫")
-        # Shows the number of servers the bot is member of.
-        embed.add_field(name="Server count", value=f"{len(self.bot.guilds)}")
-        # give users a link to invite thsi bot to their server
-        embed.add_field(name="Invite", value="https://discordapp.com/api/oauth2/authorize?client_id=472539773328818176&permissions=8&scope=bot")
-        await ctx.send(embed=embed)
 
     async def on_ready(self):
         print('-----')
