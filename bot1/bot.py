@@ -30,7 +30,6 @@ class Bot1(commands.Bot):
             except Exception:
                 traceback.print_exc()    # Botの準備完了時に呼び出されるイベント
 
-    @self.command()
     async def info(self, ctx):
         """Show Bot informations."""
         embed = discord.Embed(title="Botくん1号", description='This is Botくん1号 for managing guild.', color=0x74e6bc)
