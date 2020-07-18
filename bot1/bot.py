@@ -33,7 +33,7 @@ class Bot1(commands.Bot):
         print('-----')
         print(self.user.name)
         print(self.user.id)
-        print('ALLOED_SERVER_ID: ' + self.ALLOWED_SERVER_ID)
+        print('ALLOED_SERVER_ID: ' + self.ALLOWED_SERVER_ID.join(', '))
         print('-----')
 
     # メッセージを受信した際に呼び出されるイベント
