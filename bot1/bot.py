@@ -7,7 +7,7 @@ from discord.ext import commands
 
 class Bot1(commands.Bot):
     TOKEN = os.environ['DISCORD_BOT_TOKEN_1']
-    ALLOWED_SERVER_ID = os.environ['ALLOWED_SERVER_ID'].split(',')
+    ALLOWED_SERVER_ID = [for int(i) in os.environ['ALLOWED_SERVER_ID'].split(',')]
     INITIAL_COGS = [
         'bot1.cogs.guild_controller',
         'bot1.cogs.meta',
