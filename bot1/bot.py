@@ -39,7 +39,7 @@ class Bot1(commands.Bot):
     async def on_message(self, message):
         if message.author.bot: # メッセージの送信者がBotなら、処理を終了する。
             return
-        if not message.guild.id in ALLOWED_SERVER_ID:
+        if not message.guild.id in self.ALLOWED_SERVER_ID:
             await message.channel.send("このサーバーでは利用できません.")
             return
         await self.process_commands(message) # messageがコマンドなら実行する処理。
