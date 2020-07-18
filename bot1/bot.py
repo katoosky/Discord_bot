@@ -41,7 +41,7 @@ class Bot1(commands.Bot):
         if message.author.bot: # メッセージの送信者がBotなら、処理を終了する。
             return
         if not message.guild.id in self.ALLOWED_SERVER_ID:
-            await message.channel.send("このサーバーでは利用できません.\nアクセスのあったサーバーのID: " + message.guild.id)
+            await message.channel.send(f'このサーバーでは利用できません.\nアクセスのあったサーバーのID:{message.guild.id}')
             return
         await self.process_commands(message) # messageがコマンドなら実行する処理。
 
