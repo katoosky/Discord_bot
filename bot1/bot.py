@@ -33,6 +33,7 @@ class Bot1(commands.Bot):
         print('-----')
         print(self.user.name)
         print(self.user.id)
+        print('ALLOED_SERVER_ID: ' + self.ALLOWED_SERVER_ID)
         print('-----')
 
     # メッセージを受信した際に呼び出されるイベント
@@ -40,7 +41,7 @@ class Bot1(commands.Bot):
         if message.author.bot: # メッセージの送信者がBotなら、処理を終了する。
             return
         if not message.guild.id in self.ALLOWED_SERVER_ID:
-            await message.channel.send("このサーバーでは利用できません.")
+            await message.channel.send("このサーバーでは利用できません.\nアクセスのあったサーバーのID: " + message.guild.id)
             return
         await self.process_commands(message) # messageがコマンドなら実行する処理。
 
