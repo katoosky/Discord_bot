@@ -7,6 +7,7 @@ from discord.ext import commands
 
 class Bot1(commands.Bot):
     TOKEN = os.environ['DISCORD_BOT_TOKEN_1']
+    ALLOWED_SERVER_ID = os.environ['ALLOWED_SERVER_ID']
     INITIAL_COGS = [
         'bot1.cogs.guild_controller',
         'bot1.cogs.meta',
@@ -38,7 +39,7 @@ class Bot1(commands.Bot):
     async def on_message(self, message):
         if message.author.bot: # メッセージの送信者がBotなら、処理を終了する。
             return
-        if message.guild.id != 438704457266757643:
+        if not message.guild.id in ALLOWED_SERVER_ID:
             await message.channel.send("このサーバーでは利用できません.")
             return
         await self.process_commands(message) # messageがコマンドなら実行する処理。
